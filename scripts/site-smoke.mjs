@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile, access } from 'node:fs/promises';
 import { resolve, join, extname, sep } from 'node:path';
 import { homedir } from 'node:os';
 import { pathToFileURL } from 'node:url';
+import { unzipSync } from 'fflate';
 const { chromium } = await import('playwright').catch(() => import(pathToFileURL(join(homedir(), '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs')).href));
 
 const root = resolve('.'), website = join(root, 'website'), artifact = join(root, '.artifacts/qa');
@@ -12,8 +13,10 @@ await mkdir(artifact, { recursive: true });
 const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.zip': 'application/zip', '.json': 'application/json' };
 const server = createServer(async (request, response) => {
   try {
-    const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
-    const target = resolve(website, '.' + (pathname === '/' ? '/index.html' : pathname));
+    let pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
+    if (pathname === '/') pathname = '/index.html';
+    else if (!extname(pathname)) pathname += '.html';
+    const target = resolve(website, '.' + pathname);
     if (!target.startsWith(website + sep)) throw new Error('Invalid path');
     const bytes = await readFile(target);
     response.writeHead(200, { 'Content-Type': mime[extname(target)] || 'application/octet-stream' }); response.end(bytes);
@@ -25,58 +28,48 @@ const report = { origin: url, tests: [], browserErrors: [] };
 let browser;
 try {
   browser = await chromium.launch({ executablePath, headless: true });
-  const context = await browser.newContext({ viewport: { width: 1440, height: 1100 }, acceptDownloads: true });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true, permissions: ['clipboard-read', 'clipboard-write'] });
   const page = await context.newPage();
   page.on('pageerror', error => report.browserErrors.push(error.message));
   page.on('response', response => { if (response.status() >= 400) report.browserErrors.push(`${response.status()} ${response.url()}`); });
-  await page.goto(url); await page.waitForFunction(() => !!window.jspdf && document.querySelector('#demo-canvas').width === 720);
-  await page.screenshot({ path: join(artifact, 'desktop.png'), fullPage: true });
-  await page.locator('#demo').scrollIntoViewIfNeeded();
-  await page.screenshot({ path: join(artifact, 'desktop-demo.png') });
-  const exportSample = async (filename, sample, values) => {
-    await page.locator(`[data-sample="${sample}"]`).click();
-    for (const [name, value] of Object.entries(values)) {
-      if (name === 'capture') {
-        const input = page.locator(`input[name="${name}"][value="${value}"]`);
-        if (!(await input.isChecked())) await page.locator(`label:has(input[name="${name}"][value="${value}"])`).click();
-      }
-      else if (typeof value === 'boolean') {
-        const input = page.locator(`input[name="${name}"]`);
-        if ((await input.isChecked()) !== value) await page.locator(`label:has(input[name="${name}"])`).click();
-      }
-      else await page.locator(`select[name="${name}"]`).selectOption(String(value));
+  await page.goto(url);
+  if (await page.locator('h1').count() !== 1 || await page.locator('ol li').count() < 3) throw new Error('Download page is missing its heading or installation steps.');
+  await page.getByTestId('copy-extensions').click();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  if (copied !== 'chrome://extensions') throw new Error('Extensions address was not copied.');
+  report.tests.push({ test: 'Chrome extensions address copied', value: copied });
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByTestId('download-extension').click();
+  const download = await downloadPromise;
+  if (await download.failure()) throw new Error(await download.failure());
+  const downloadedPath = join(artifact, 'site-downloaded-extension.zip');
+  await download.saveAs(downloadedPath);
+  const zip = unzipSync(await readFile(downloadedPath));
+  const manifest = JSON.parse(new TextDecoder().decode(zip['manifest.json']));
+  const sourceManifest = JSON.parse(await readFile(join(root, 'extension/manifest.json'), 'utf8'));
+  if (manifest.version !== sourceManifest.version || manifest.host_permissions?.length) throw new Error('Extension download version or permissions mismatch.');
+  report.tests.push({ test: 'Extension ZIP download contains the production manifest', version: manifest.version, files: Object.keys(zip).length });
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: width === 1440 ? 1000 : 844 });
+    for (const path of ['', 'install', 'privacy']) {
+      await page.goto(url + path);
+      const dimensions = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, innerWidth, scrollHeight: document.documentElement.scrollHeight }));
+      if (dimensions.scrollWidth > dimensions.innerWidth) throw new Error(`Horizontal overflow at ${width}px on ${path || 'home'}.`);
+      report.tests.push({ test: `${path || 'home'} at ${width}px`, ...dimensions });
+      await page.screenshot({ path: join(artifact, `simple-${width}-${path || 'home'}.png`), fullPage: true });
     }
-    const expected = await page.locator('#preview-count-label').textContent();
-    const downloadPromise = page.waitForEvent('download');
-    await page.locator('#download-demo').click();
-    const download = await downloadPromise;
-    if (await download.failure()) throw new Error(await download.failure());
-    await download.saveAs(join(artifact, filename));
-    const status = await page.locator('#demo-status').textContent();
-    const bytes = await readFile(join(artifact, filename));
-    if (bytes.subarray(0, 5).toString() !== '%PDF-' || !status.includes('Saved your')) throw new Error(`Invalid demo PDF: ${filename}`);
-    report.tests.push({ test: filename, sample, values, expected, status, bytes: bytes.length, path: join(artifact, filename) });
-  };
-  await exportSample('article-a4-portrait.pdf', 'article', { capture: 'full', paper: 'a4', orientation: 'portrait', margin: '12', scale: '1', hideNav: true, images: true, source: true });
-  await exportSample('menu-letter-landscape.pdf', 'menu', { capture: 'full', paper: 'letter', orientation: 'landscape', margin: '6', scale: '1.12', hideNav: false, images: true, source: true });
-  await exportSample('article-visible-noimages.pdf', 'article', { capture: 'viewport', paper: 'a4', orientation: 'portrait', margin: '0', scale: '0.88', hideNav: true, images: false, source: false });
-  const packageDownloadPromise = page.waitForEvent('download');
-  await page.locator('.hero-actions a[href$=".zip"]').click();
-  const packageDownload = await packageDownloadPromise;
-  await packageDownload.saveAs(join(artifact, 'site-downloaded-extension.zip'));
-  const packageBytes = await readFile(join(artifact, 'site-downloaded-extension.zip'));
-  if (packageBytes.readUInt16LE(0) !== 0x4b50) throw new Error('Downloaded extension ZIP invalid.');
-  report.tests.push({ test: 'extension ZIP download', bytes: packageBytes.length });
-  for (const path of ['install.html', 'privacy.html']) { await page.goto(url + path); await page.screenshot({ path: join(artifact, `desktop-${path}.png`), fullPage: true }); }
-  const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, deviceScaleFactor: 2, hasTouch: true });
-  const phone = await mobile.newPage(); await phone.goto(url);
-  await phone.waitForFunction(() => !!window.jspdf && document.querySelector('#demo-canvas').width === 720);
-  const mobileOverflow = await phone.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, innerWidth, scrollHeight: document.documentElement.scrollHeight }));
-  report.tests.push({ test: 'mobile width 390 no horizontal overflow', ...mobileOverflow });
-  if (mobileOverflow.scrollWidth > mobileOverflow.innerWidth) throw new Error('Mobile horizontal overflow.');
-  await phone.screenshot({ path: join(artifact, 'mobile.png'), fullPage: true });
-  await phone.locator('#demo').scrollIntoViewIfNeeded(); await phone.screenshot({ path: join(artifact, 'mobile-demo.png') });
-  for (const path of ['install.html', 'privacy.html']) { await phone.goto(url + path); await phone.screenshot({ path: join(artifact, `mobile-${path}.png`), fullPage: true }); }
+  }
+  await page.goto(url);
+  await page.evaluate(() => { Object.defineProperty(navigator.clipboard, 'writeText', { configurable: true, value: async () => { throw new DOMException('Clipboard unavailable', 'NotAllowedError'); } }); });
+  await page.getByTestId('copy-extensions').click();
+  const fallback = await page.getByTestId('copy-status').textContent();
+  if (!fallback?.includes('chrome://extensions')) throw new Error('Manual copy fallback is missing.');
+  report.tests.push({ test: 'Clipboard failure offers manual address', feedback: fallback });
+  const noJsContext = await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: false });
+  const noJsPage = await noJsContext.newPage();
+  await noJsPage.goto(url);
+  if (!(await noJsPage.getByTestId('download-extension').isVisible()) || !(await noJsPage.locator('body').textContent()).includes('chrome://extensions')) throw new Error('Instructions and download must work without JavaScript.');
+  report.tests.push({ test: 'Instructions and download available without JavaScript' });
   if (report.browserErrors.length) throw new Error('Browser page errors or HTTP failures.');
   report.passed = true;
 } catch (error) { report.error = error.stack; report.passed = false; }

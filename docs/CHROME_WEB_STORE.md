@@ -53,7 +53,7 @@ Complete the current dashboard's data-use declarations accurately for local proc
 - Automated regression checks cover capture coverage, page boundaries, dimensions, filenames, cancellation, page restoration, and local PDF encoding.
 - Real Chromium tests exercise captureVisibleTab, content scripting, offscreen rendering, downloads, horizontal overflow, current view, tab switching, and cancellation on a controlled local fixture.
 - The automated capture test uses an isolated test-only all-URL grant because Playwright cannot invoke the native toolbar user gesture that grants activeTab. It blocks external requests and contains no user account or browsing data. The production manifest remains activeTab-only and is fingerprinted before and after the test. Test the production package by invoking the toolbar button in an ordinary Chrome profile before submitting to the store.
-- Website sample PDFs and desktop/mobile layouts are rendered and visually checked.
+- Website installation instructions, extension download, and desktop/mobile layouts are checked.
 - Include store-sized product screenshots and the supplied 128px icon. The actual popup capture is in `.artifacts/browser-smoke/popup.png`; website screenshots are in `.artifacts/qa/`.
 
 The publisher must complete any required account registration, agreements, payment, and store review. A ZIP hosted on Vercel is an unpacked beta distribution, not a Chrome Web Store installation.

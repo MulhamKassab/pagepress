@@ -1,6 +1,6 @@
 # PagePress
 
-A Chrome extension that turns the current webpage into a PDF, with a companion product site and interactive demo. Built by Mulham Kassab.
+A Chrome extension that turns the current webpage into a PDF, with a simple download and installation website. Built by Mulham Kassab.
 
 ## What it does
 
@@ -30,7 +30,7 @@ npm test
 npm run dev
 ```
 
-`npm run dev` serves the companion website at `http://127.0.0.1:4387`. `npm run build` copies the pinned jsPDF library into both deliverables and creates the installable ZIP in `website/downloads/` and `.artifacts/`.
+`npm run dev` serves the companion website at `http://127.0.0.1:4387`. `npm run build` bundles the pinned jsPDF library into the extension and creates the installable ZIP in `website/downloads/` and `.artifacts/`.
 
 Extension icons are tracked, ready to use, and can be regenerated with `python scripts/generate-icons.py` when Pillow is installed.
 
@@ -38,7 +38,7 @@ Extension icons are tracked, ready to use, and can be regenerated with `python s
 
 ```text
 extension/    Manifest V3 extension, popup, capture engine, local PDF renderer
-website/      Product site, install guide, privacy page, interactive sample demo
+website/      Extension download, short install guide, and privacy page
 scripts/      Build, packaging, source checks, and local preview
 tests/        Capture geometry and PDF rendering regression checks
 ```
@@ -53,7 +53,7 @@ Import this repository into Vercel. The root `vercel.json` sets `npm run build` 
 
 Chrome restricts extension access on browser-internal pages and some protected pages. Full-page capture is bounded to avoid excessive memory use. Pages with infinite scrolling, virtualized lists, internal scroll regions, or rapidly changing layouts may need viewport capture or Print PDF. Keep the captured tab active until export finishes. Content that has not loaded is not part of the capture.
 
-The website demo uses clearly labeled fictional content and generates a genuine sample PDF. It does not claim to convert arbitrary external URLs from a web form.
+The companion website provides the extension ZIP and short installation instructions. Webpage export runs through the extension in Chrome; the website does not accept arbitrary URLs or fetch pages for conversion.
 
 ## License
 

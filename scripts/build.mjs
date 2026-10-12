@@ -3,7 +3,7 @@ import { resolve, join, relative } from 'node:path';
 import { zipSync } from 'fflate';
 
 const root = resolve('.');
-for (const target of ['extension/vendor', 'website/vendor']) {
+for (const target of ['extension/vendor']) {
   await mkdir(target, { recursive: true });
   await cp('node_modules/jspdf/dist/jspdf.umd.min.js', `${target}/jspdf.umd.min.js`);
   await cp('node_modules/jspdf/LICENSE', `${target}/jspdf-LICENSE.txt`);

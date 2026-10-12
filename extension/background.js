@@ -122,7 +122,8 @@ async function exportPage(currentJob) {
     }
     if (complete) { await offscreen('RELEASE', { url: blobUrl }).catch(() => {}); await forgetDownload(downloadId); blobUrl = null; }
   } catch (error) {
-    await publish({ phase: currentJob.cancelled ? 'canceled' : 'error', progress: 0, message: error.message || 'Could not export this page.', error: error.message });
+    const message = currentJob.cancelled ? 'Export canceled.' : error.message || 'Could not export this page.';
+    await publish({ phase: currentJob.cancelled ? 'canceled' : 'error', progress: 0, message, error: currentJob.cancelled ? null : error.message });
     if (blobUrl) await offscreen('RELEASE', { url: blobUrl }).catch(() => {});
     await offscreen('ABORT').catch(() => {});
   } finally {

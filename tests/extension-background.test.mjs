@@ -192,6 +192,8 @@ test('cancel while preparation is pending restores again after preparation and s
   prepareGate.resolve();
   await settled();
   assert.equal(state.session.exportStatus.phase, 'canceled');
+  assert.equal(state.session.exportStatus.message, 'Export canceled.');
+  assert.equal(state.session.exportStatus.error, null);
   assert.equal(state.captures.length, 0);
   assert.equal(state.downloads.length, 0);
   assert.ok(state.content.some(message => message.type === 'RESTORE' && message.reset),

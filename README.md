@@ -21,7 +21,7 @@ Use **Alt+Shift+P** to export with the last saved settings (subject to other bro
 
 ## Develop
 
-Requires Node.js 22+ (Node 24 recommended).
+Requires Node.js 24.
 
 ```sh
 npm ci

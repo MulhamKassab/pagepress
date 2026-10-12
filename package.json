@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Local webpage-to-PDF Chrome extension and companion website by Mulham Kassab.",
   "engines": {
-    "node": ">=22"
+    "node": "24.x"
   },
   "scripts": {
     "build": "node scripts/build.mjs",

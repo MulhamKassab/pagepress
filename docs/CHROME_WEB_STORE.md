@@ -4,7 +4,7 @@ The public website and personal-beta ZIP are ready. A store release is a separat
 
 ## Package
 
-Run `npm ci && npm run verify`. Upload `.artifacts/pagepress-extension-v1.0.0.zip`, with `manifest.json` directly at the archive root. The release contains the locally bundled jsPDF library and its MIT license. No remote code runs inside the extension.
+Run `npm ci && npm run verify`. Upload `.artifacts/pagepress-extension-v1.0.1.zip`, with `manifest.json` directly at the archive root. The release contains the locally bundled jsPDF library and its MIT license. No remote code runs inside the extension.
 
 ## Listing draft
 

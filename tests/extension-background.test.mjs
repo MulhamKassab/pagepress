@@ -27,7 +27,7 @@ async function until(condition, description) {
 async function harness(config = {}) {
   const state = {
     activeTab: { ...page }, session: {}, local: {}, events: [], content: [], offscreen: [],
-    downloads: [], captures: [], statusHistory: [], queryCount: 0, closed: 0,
+    downloads: [], captures: [], captureTimestamps: [], statusHistory: [], queryCount: 0, closed: 0,
     scrollX: 0, scrollY: 0,
   };
   let listener;
@@ -77,6 +77,7 @@ async function harness(config = {}) {
         throw new Error(`Unexpected content command ${message.type}`);
       },
       async captureVisibleTab(windowId, captureOptions) {
+        state.captureTimestamps.push(Date.now());
         state.captures.push({ windowId, options: captureOptions });
         state.events.push('capture');
         return 'data:image/png;base64,test-screenshot';
@@ -231,4 +232,20 @@ test('manual scrolling before capture stops rather than exporting mismatched pix
   assert.equal(state.captures.length, 0);
   assert.equal(state.downloads.length, 0);
   assert.equal(state.content.filter(message => message.type === 'RESTORE').length, 1);
+});
+
+test('rapid consecutive viewport exports share Chrome capture throttling across jobs', async () => {
+  const { state, send } = await harness();
+  for (let exportNumber = 1; exportNumber <= 3; exportNumber++) {
+    const response = await send({ type: 'EXPORT', options: { scope: 'viewport' } });
+    assert.equal(response.ok, true, response.error);
+    await until(() => state.closed === exportNumber, `viewport export ${exportNumber} cleanup`);
+    assert.equal(state.session.exportStatus.phase, 'done');
+  }
+  assert.equal(state.captures.length, 3, 'Each viewport export captures exactly once');
+  assert.equal(state.downloads.length, 3);
+  for (let index = 1; index < state.captureTimestamps.length; index++) {
+    const interval = state.captureTimestamps[index] - state.captureTimestamps[index - 1];
+    assert.ok(interval >= 550, `Separate export jobs captured only ${interval} ms apart`);
+  }
 });

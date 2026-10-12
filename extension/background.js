@@ -1,6 +1,9 @@
 import { normalizeOptions, planTiles, pdfLayout, safeFilename } from './lib/geometry.js';
 
 let job = null, starting = false, creatingOffscreen = null, downloadUpdates = Promise.resolve();
+// Chrome's capture quota applies to the extension, including consecutive exports.
+const CAPTURE_INTERVAL_MS = 550;
+let lastCaptureAt = 0;
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const activePhases = ['preparing', 'capturing', 'assembling', 'saving'];
 
@@ -75,7 +78,6 @@ async function exportPage(currentJob) {
     const tiles = planTiles(metrics, options), layout = pdfLayout(metrics, options);
     await ensureOffscreen();
     await offscreen('BEGIN', { layout, options, meta: { title: metrics.title || tab.title, url: metrics.url || tab.url, date: new Date().toISOString() } });
-    let lastCaptureAt = 0;
     for (let index = 0; index < tiles.length; index++) {
       await ensureActive(currentJob);
       const tile = tiles[index];
@@ -84,14 +86,15 @@ async function exportPage(currentJob) {
       const cropX = options.scope === 'viewport' ? 0 : tile.x - moved.x;
       const cropY = options.scope === 'viewport' ? 0 : tile.y - moved.y;
       if (cropX < -1 || cropY < -1 || cropX + tile.width > metrics.viewportWidth + 1 || cropY + tile.height > metrics.viewportHeight + 1) throw new Error('This page prevented scrolling to the next section. Try Print mode or Current view.');
-      const delay = Math.max(0, 550 - (Date.now() - lastCaptureAt));
-      if (delay) await pause(delay);
+      while (Date.now() - lastCaptureAt < CAPTURE_INTERVAL_MS) {
+        await pause(CAPTURE_INTERVAL_MS - (Date.now() - lastCaptureAt));
+      }
       await ensureActive(currentJob);
       const beforeCapture = await content(tab.id, 'METRICS');
       if (beforeCapture.scrollX !== moved.x || beforeCapture.scrollY !== moved.y) throw new Error('The page was scrolled during capture. Keep the page still and export again.');
       if (beforeCapture.innerWidth !== moved.innerWidth || beforeCapture.innerHeight !== moved.innerHeight) throw new Error('The browser window changed size during capture. Keep its size steady and try again.');
-      const image = await chrome.tabs.captureVisibleTab(tab.windowId, { format: 'png' });
       lastCaptureAt = Date.now();
+      const image = await chrome.tabs.captureVisibleTab(tab.windowId, { format: 'png' });
       await ensureActive(currentJob);
       const afterCapture = await content(tab.id, 'METRICS');
       if (afterCapture.scrollX !== moved.x || afterCapture.scrollY !== moved.y) throw new Error('The page was scrolled during capture. Keep the page still and export again.');

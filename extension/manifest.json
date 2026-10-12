@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PagePress — Web to PDF",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Save the current webpage as a local PDF. Full-page captures, print mode, and simple page cleanup.",
   "minimum_chrome_version": "116",
   "permissions": ["activeTab", "scripting", "downloads", "storage", "offscreen"],

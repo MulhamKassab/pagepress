@@ -1,0 +1,60 @@
+# PagePress
+
+A Chrome extension that turns the current webpage into a PDF, with a companion product site and interactive demo. Built by Mulham Kassab.
+
+## What it does
+
+- **Visual PDF:** captures the full loaded page or current viewport and downloads a paginated PDF locally. This mode preserves the visible appearance; the captured text is part of the image and is not selectable.
+- **Print PDF:** opens the browser's print preview for text-friendly, searchable PDFs when the source page supports them. Select **Save as PDF** and save in the browser dialog.
+- A4 or Letter, portrait or landscape, margins, capture quality, source/date footer, and saved preferences.
+- Hide selected page elements, undo removals, and restore the page. Long captures omit repeated sticky elements and restore the scroll position afterward.
+- Page processing stays in the browser. No accounts, conversion server, remote scripts, analytics, or page-content uploads.
+
+## Install the personal beta
+
+1. Download and unzip `pagepress-extension.zip` from the website.
+2. Open `chrome://extensions` and enable **Developer mode**.
+3. Click **Load unpacked** and select the unzipped folder containing `manifest.json`.
+4. Pin PagePress, open a regular webpage, and use the extension.
+
+Use **Alt+Shift+P** to export with the last saved settings (subject to other browser shortcut assignments). The beta is not yet listed in the Chrome Web Store. A public store release requires the owner's Chrome Web Store publisher account and review.
+
+## Develop
+
+Requires Node.js 22+ (Node 24 recommended).
+
+```sh
+npm ci
+npm run build
+npm test
+npm run dev
+```
+
+`npm run dev` serves the companion website at `http://127.0.0.1:4387`. `npm run build` copies the pinned jsPDF library into both deliverables and creates the installable ZIP in `website/downloads/` and `.artifacts/`.
+
+Extension icons are tracked, ready to use, and can be regenerated with `python scripts/generate-icons.py` when Pillow is installed.
+
+## Repository layout
+
+```text
+extension/    Manifest V3 extension, popup, capture engine, local PDF renderer
+website/      Product site, install guide, privacy page, interactive sample demo
+scripts/      Build, packaging, source checks, and local preview
+tests/        Capture geometry and PDF rendering regression checks
+```
+
+## Deployment
+
+Import this repository into Vercel. The root `vercel.json` sets `npm run build` and the `website` output directory. The Git-connected production branch is `codex/pagepress`. Add `pdf.mulhamkassab.dev` to the Vercel project and create the CNAME Vercel specifies at the domain's DNS provider. The portfolio links to the product site.
+
+## Permissions and limits
+
+`activeTab` provides access only after a user action; `scripting` prepares the selected page; `downloads` saves the PDF; `storage` remembers settings and progress; `offscreen` assembles PDF pages without a large foreground window. PagePress does not ask for persistent access to every website, browser history, or the debugger.
+
+Chrome restricts extension access on browser-internal pages and some protected pages. Full-page capture is bounded to avoid excessive memory use. Pages with infinite scrolling, virtualized lists, internal scroll regions, or rapidly changing layouts may need viewport capture or Print PDF. Keep the captured tab active until export finishes. Content that has not loaded is not part of the capture.
+
+The website demo uses clearly labeled fictional content and generates a genuine sample PDF. It does not claim to convert arbitrary external URLs from a web form.
+
+## License
+
+MIT. jsPDF is bundled locally under its MIT license; its license is included in the release ZIP. No third-party code is fetched by the extension at runtime.

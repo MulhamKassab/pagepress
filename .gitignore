@@ -1,0 +1,11 @@
+node_modules/
+.vercel/
+.artifacts/
+.cache/
+coverage/
+website/downloads/*.zip
+website/vendor/
+extension/vendor/
+.env*
+!.env.example
+*.log

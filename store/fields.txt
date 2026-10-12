@@ -1,0 +1,34 @@
+STORE ICON
+icon128.png — 128×128 PNG. Transparent padding is intentional for the icon.
+
+GLOBAL PROMO VIDEO
+Leave blank. No YouTube promotional video has been created; this field is optional.
+
+SCREENSHOTS
+screenshot-capture.png — 1280×800, 24-bit RGB PNG with no alpha.
+One screenshot is sufficient; you do not have to upload five.
+
+SMALL PROMO TILE
+promo-small.png — 440×280, 24-bit RGB PNG with no alpha.
+
+MARQUEE PROMO TILE
+promo-marquee.png — 1400×560, 24-bit RGB PNG with no alpha.
+
+OFFICIAL WEBSITE
+Select mulhamkassab.dev if it is already in the verified-site dropdown. Otherwise leave this optional field blank until you verify ownership through Google Search Console. Owning the domain does not itself mean Google has verified it.
+
+HOMEPAGE URL
+https://mulhamkassab.dev/
+
+SUPPORT URL
+https://github.com/MulhamKassab/pagepress/issues
+
+MATURE CONTENT
+Leave unchecked. webTopdf is a general-purpose webpage-to-PDF utility.
+
+PRIVACY POLICY (Privacy practices tab)
+https://webtopdf.mulhamkassab.dev/privacy
+
+Official requirements:
+https://developer.chrome.com/docs/webstore/images
+https://developer.chrome.com/docs/webstore/cws-dashboard-listing

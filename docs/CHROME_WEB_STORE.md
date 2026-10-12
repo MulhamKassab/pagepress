@@ -64,6 +64,6 @@ The publisher must complete any required account registration, agreements, payme
 
 ## Ready-to-upload graphics
 
-Use `store/screenshot-capture.png` (1280×800), `store/promo-small.png` (440×280), and `store/icon128.png`. These show the actual extension interface and its current branding. The account publisher display name should be Mulham Kassab. Chrome removed manifest `author` support in February 2024, so attribution is included in the popup, listing description, and publisher display name; the manifest homepage is https://mulhamkassab.dev/.
+Use `store/screenshot-capture.png` (1280×800), `store/promo-small.png` (440×280), `store/promo-marquee.png` (1400×560), and `store/icon128.png`. The screenshot and promo tiles are 24-bit RGB PNGs without alpha; the icon retains transparent padding. These show the actual extension interface and its current branding. The account publisher display name should be Mulham Kassab. Chrome removed manifest `author` support in February 2024, so attribution is included in the popup, listing description, and publisher display name; the manifest homepage is https://mulhamkassab.dev/. Use `store/fields.txt` for the exact asset and URL mapping.
 
 Official references: https://developer.chrome.com/docs/extensions/reference/manifest/author and https://developer.chrome.com/docs/webstore/images.

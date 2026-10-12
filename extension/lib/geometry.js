@@ -74,7 +74,7 @@ export function tileSlices(tile, layout) {
 
 export function safeFilename(title = '') {
   let base = String(title).replace(/[<>:"/\\|?*\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().replace(/\.pdf$/i, '').replace(/[. ]+$/g, '').slice(0, 140).trim();
-  if (!base) base = 'PagePress export';
-  if (/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(base)) base = `PagePress ${base}`;
+  if (!base) base = 'webTopdf export';
+  if (/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(base)) base = `webTopdf ${base}`;
   return `${base}.pdf`;
 }

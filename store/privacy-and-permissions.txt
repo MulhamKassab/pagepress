@@ -1,0 +1,22 @@
+SINGLE PURPOSE
+Create a PDF of a webpage the user deliberately chooses, with optional temporary page-layout cleanup.
+
+PERMISSION JUSTIFICATIONS
+activeTab: temporary access to the current tab after the user invokes webTopdf, for that selected export.
+scripting: measure and prepare the chosen page, scroll during full-page capture, hide selected elements, and restore the page afterward.
+downloads: save the PDF created locally and show the resulting file in Chrome Downloads.
+storage: save export preferences and maintain temporary export progress and download-recovery status.
+offscreen: assemble captured views into PDF pages locally and manage the generated file's Blob URL.
+
+REMOTE CODE
+No remote code is executed. jsPDF and its MIT license are bundled inside the uploaded extension. Extension pages use scripts from their own package.
+
+DATA HANDLING FACTS
+The chosen webpage's content, title, URL, dimensions, and rendered screenshots are processed locally to perform capture. User-requested PDF files may contain that information. Export settings persist in local extension storage. The latest export title and download status are held temporarily in session storage for progress and recovery. There is no capture history, account system, analytics, advertising, page-upload service, or transmission of captures to the developer.
+
+The hosting provider receives ordinary technical request information when users load the companion website. Its hosting logs are separate from the extension's local processing.
+
+Use these facts to complete the dashboard's current data-use questions. Do not describe the extension as never handling website content. Do not select categories for unrelated information that the extension does not collect. Page information is used only for the requested PDF export and is not sold or used for advertising or unrelated purposes.
+
+PRIVACY POLICY
+https://webtopdf.mulhamkassab.dev/privacy

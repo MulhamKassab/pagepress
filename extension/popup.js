@@ -6,7 +6,7 @@ let mode = 'visual', currentTabId = null, busy = false;
 const running = ['preparing', 'capturing', 'assembling', 'saving'];
 async function send(type, data = {}) {
   const response = await chrome.runtime.sendMessage({ target: 'background', type, ...data });
-  if (!response?.ok) throw new Error(response?.error || 'PagePress did not respond. Please try again.');
+  if (!response?.ok) throw new Error(response?.error || 'webTopdf did not respond. Please try again.');
   return response.data;
 }
 function options() {

@@ -10,7 +10,7 @@ for (const target of ['extension/vendor']) {
 }
 const manifest = JSON.parse(await readFile('extension/manifest.json', 'utf8'));
 if (manifest.manifest_version !== 3) throw new Error('Manifest V3 is required');
-if ((manifest.host_permissions || []).length) throw new Error('PagePress must not request persistent all-site access');
+if ((manifest.host_permissions || []).length) throw new Error('webTopdf must not request persistent all-site access');
 const required = ['manifest.json', 'background.js', 'popup.html', 'icons/icon128.png', 'vendor/jspdf.umd.min.js'];
 for (const file of required) await stat(join(root, 'extension', file));
 await cp('LICENSE', 'extension/LICENSE');
@@ -31,7 +31,8 @@ await add(join(root, 'extension'));
 const archive = zipSync(entries, { level: 6 });
 await mkdir('website/downloads', { recursive: true });
 await mkdir('.artifacts', { recursive: true });
-await writeFile('website/downloads/pagepress-extension.zip', archive);
-await writeFile(`.artifacts/pagepress-extension-v${manifest.version}.zip`, archive);
-await writeFile('website/downloads/release.json', JSON.stringify({ version: manifest.version, minimumChromeVersion: manifest.minimum_chrome_version, archive: '/downloads/pagepress-extension.zip', source: 'https://github.com/MulhamKassab/pagepress', bytes: archive.byteLength }, null, 2) + '\n');
-console.log(`PagePress ${manifest.version}: packaged ${Object.keys(entries).length} extension files (${Math.round(archive.byteLength / 1024)} KB). Website ready in website/.`);
+await writeFile('website/downloads/webtopdf-extension.zip', archive);
+await writeFile('website/downloads/pagepress-extension.zip', archive); // Keep existing download links working.
+await writeFile(`.artifacts/webtopdf-extension-v${manifest.version}.zip`, archive);
+await writeFile('website/downloads/release.json', JSON.stringify({ version: manifest.version, minimumChromeVersion: manifest.minimum_chrome_version, archive: '/downloads/webtopdf-extension.zip', source: 'https://github.com/MulhamKassab/pagepress', bytes: archive.byteLength }, null, 2) + '\n');
+console.log(`webTopdf ${manifest.version}: packaged ${Object.keys(entries).length} extension files (${Math.round(archive.byteLength / 1024)} KB). Website ready in website/.`);

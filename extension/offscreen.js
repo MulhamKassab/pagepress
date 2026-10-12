@@ -40,9 +40,9 @@ function flush(index) {
 }
 async function handle(message) {
   if (message.type === 'BEGIN') {
-    if (!globalThis.jspdf?.jsPDF) throw new Error('The bundled PDF library is missing. Reinstall PagePress from the complete ZIP.');
+    if (!globalThis.jspdf?.jsPDF) throw new Error('The bundled PDF library is missing. Reinstall webTopdf from the complete ZIP.');
     session = { layout: message.layout, options: message.options, meta: message.meta, canvases: new Map(), flushed: 0, pdf: new globalThis.jspdf.jsPDF({ orientation: message.options.orientation, unit: 'mm', format: [message.layout.pageWidth, message.layout.pageHeight], compress: true }) };
-    session.pdf.setProperties({ title: String(message.meta.title || 'Saved webpage'), author: '', creator: 'PagePress — local webpage export', subject: 'Visual webpage capture' });
+    session.pdf.setProperties({ title: String(message.meta.title || 'Saved webpage'), author: '', creator: 'webTopdf — local webpage export', subject: 'Visual webpage capture' });
     return {};
   }
   if (message.type === 'RELEASE') { URL.revokeObjectURL(message.url); urls.delete(message.url); return {}; }

@@ -1,4 +1,4 @@
-# PagePress
+# webTopdf
 
 A Chrome extension that turns the current webpage into a PDF, with a simple download and installation website. Built by Mulham Kassab.
 
@@ -12,10 +12,10 @@ A Chrome extension that turns the current webpage into a PDF, with a simple down
 
 ## Install the personal beta
 
-1. Download and unzip `pagepress-extension.zip` from the website.
+1. Download and unzip `webtopdf-extension.zip` from the website.
 2. Open `chrome://extensions` and enable **Developer mode**.
 3. Click **Load unpacked** and select the unzipped folder containing `manifest.json`.
-4. Pin PagePress, open a regular webpage, and use the extension.
+4. Pin webTopdf, open a regular webpage, and use the extension.
 
 Use **Alt+Shift+P** to export with the last saved settings (subject to other browser shortcut assignments). The beta is not yet listed in the Chrome Web Store. A public store release requires the owner's Chrome Web Store publisher account and review.
 
@@ -49,7 +49,7 @@ Import this repository into Vercel. The root `vercel.json` sets `npm run build` 
 
 ## Permissions and limits
 
-`activeTab` provides access only after a user action; `scripting` prepares the selected page; `downloads` saves the PDF; `storage` remembers settings and progress; `offscreen` assembles PDF pages without a large foreground window. PagePress does not ask for persistent access to every website, browser history, or the debugger.
+`activeTab` provides access only after a user action; `scripting` prepares the selected page; `downloads` saves the PDF; `storage` remembers settings and progress; `offscreen` assembles PDF pages without a large foreground window. webTopdf does not ask for persistent access to every website, browser history, or the debugger.
 
 Chrome restricts extension access on browser-internal pages and some protected pages. Full-page capture is bounded to avoid excessive memory use. Pages with infinite scrolling, virtualized lists, internal scroll regions, or rapidly changing layouts may need viewport capture or Print PDF. Keep the captured tab active until export finishes. Content that has not loaded is not part of the capture.
 

@@ -1,0 +1,42 @@
+NAME
+webTopdf
+
+PUBLISHER DISPLAY NAME
+Mulham Kassab
+
+SUMMARY
+Save webpages as a PDF on your device. Full-page capture, browser print and page cleanup. By Mulham Kassab.
+
+CATEGORY
+Productivity
+
+LANGUAGE
+English
+
+HOMEPAGE
+https://mulhamkassab.dev/
+
+PRODUCT WEBSITE
+https://webtopdf.mulhamkassab.dev/
+
+SUPPORT
+https://github.com/MulhamKassab/pagepress/issues
+
+PRIVACY POLICY
+https://webtopdf.mulhamkassab.dev/privacy
+
+DESCRIPTION
+webTopdf by Mulham Kassab — https://mulhamkassab.dev/
+
+Save the webpage open in Chrome as a PDF on your device.
+
+Visual PDF captures the full loaded page or current view and downloads a paginated, image-based PDF. Choose A4 or Letter, portrait or landscape, margins, image quality, and an optional source/date footer. Hide selected page elements, undo changes, and save your preferred settings. Alt+Shift+P offers quick save with your last settings when that shortcut is available.
+
+Browser print opens Chrome's print preview. Choose Save as PDF to create a text-friendly PDF using the website's print layout. Visual captures preserve appearance as images and do not contain selectable text; print output depends on the website.
+
+Processing happens locally. There is no account, page-upload endpoint, remote code, advertising, or analytics. Temporary access to the current tab is granted when you invoke the extension.
+
+Chrome restricts extension access to its internal and protected pages. Keep the captured tab active until saving finishes. Load the content you need before capture. Very long, infinite-scrolling, virtualized, embedded, or changing layouts may work better with current-view capture or browser print.
+
+TEST INSTRUCTIONS
+No account, credentials, payment, or external backend is required. Open an ordinary webpage, click webTopdf, choose Current view and Save as PDF, and confirm that Chrome downloads a PDF. Choose Full page to test scrolling capture, or Searchable print to open the browser's print preview. Use Pick & hide to temporarily remove a chosen page element, then Undo or Reset to restore it. Captures, cancellation, and recoverable failures restore page state.

@@ -1,6 +1,6 @@
 {
   "name": "pagepress",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "Local webpage-to-PDF Chrome extension and companion website by Mulham Kassab.",

@@ -29,7 +29,7 @@ async function ensureActive(currentJob) {
 }
 async function inject(tabId) {
   try { await chrome.scripting.executeScript({ target: { tabId }, files: ['content.js'] }); }
-  catch (error) { throw new Error(/^file:/.test((await chrome.tabs.get(tabId)).url || '') ? 'Enable “Allow access to file URLs” in PagePress extension details to export local files.' : 'Chrome does not allow PagePress to run on this page. Try a normal webpage.'); }
+  catch (error) { throw new Error(/^file:/.test((await chrome.tabs.get(tabId)).url || '') ? 'Enable “Allow access to file URLs” in webTopdf extension details to export local files.' : 'Chrome does not allow webTopdf to run on this page. Try a normal webpage.'); }
 }
 async function content(tabId, type, values = {}) {
   const result = await chrome.tabs.sendMessage(tabId, { target: 'content', type, ...values });
@@ -176,7 +176,7 @@ async function handle(message, sender) {
     await inject(tab.id);
     return content(tab.id, message.type, { options: normalizeOptions(message.options) });
   }
-  throw new Error('Unknown PagePress command.');
+  throw new Error('Unknown webTopdf command.');
 }
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
   if (message.target !== 'background') return;

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.2",
+  "version": "1.1.0",
   "minimumChromeVersion": "116",
-  "archive": "/downloads/pagepress-extension.zip",
+  "archive": "/downloads/webtopdf-extension.zip",
   "source": "https://github.com/MulhamKassab/pagepress",
-  "bytes": 166983
+  "bytes": 166925
 }

@@ -209,8 +209,8 @@ test('actual capture crop overrides carry through to screenshot source coordinat
 });
 
 test('export filenames are usable on Windows and have one PDF suffix', () => {
-  assert.equal(safeFilename(''), 'PagePress export.pdf');
-  assert.equal(safeFilename('   '), 'PagePress export.pdf');
+  assert.equal(safeFilename(''), 'webTopdf export.pdf');
+  assert.equal(safeFilename('   '), 'webTopdf export.pdf');
   for (const title of ['A/B\\C:D*E?F"G<H>I|J', 'trailing... ', 'CON', 'PRN', 'AUX', 'NUL', 'COM1', 'LPT9']) {
     const filename = safeFilename(title);
     assert.ok(filename.endsWith('.pdf'));

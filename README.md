@@ -45,7 +45,7 @@ tests/        Capture geometry and PDF rendering regression checks
 
 ## Deployment
 
-Import this repository into Vercel. The root `vercel.json` sets `npm run build` and the `website` output directory. The Git-connected production branch is `codex/pagepress`. Add `pdf.mulhamkassab.dev` to the Vercel project and create the CNAME Vercel specifies at the domain's DNS provider. The portfolio links to the product site.
+Import this repository into Vercel. The root `vercel.json` sets `npm run build` and the `website` output directory. The Git-connected production branch is `codex/pagepress`. Add `webtopdf.mulhamkassab.dev` to the Vercel project and create the CNAME Vercel specifies at the domain's DNS provider. The portfolio links to the product site.
 
 ## Permissions and limits
 

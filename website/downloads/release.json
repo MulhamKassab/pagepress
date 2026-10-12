@@ -1,7 +1,7 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "minimumChromeVersion": "116",
   "archive": "/downloads/pagepress-extension.zip",
   "source": "https://github.com/MulhamKassab/pagepress",
-  "bytes": 166980
+  "bytes": 166983
 }

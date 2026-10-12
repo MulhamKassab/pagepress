@@ -4,16 +4,16 @@ The public website and personal-beta ZIP are ready. A store release is a separat
 
 ## Package
 
-Run `npm ci && npm run verify`. Upload `.artifacts/pagepress-extension-v1.0.1.zip`, with `manifest.json` directly at the archive root. The release contains the locally bundled jsPDF library and its MIT license. No remote code runs inside the extension.
+Run `npm ci && npm run verify`. Upload `.artifacts/pagepress-extension-v1.0.2.zip`, with `manifest.json` directly at the archive root. The release contains the locally bundled jsPDF library and its MIT license. No remote code runs inside the extension.
 
 ## Listing draft
 
 - **Name:** PagePress - Web to PDF
 - **Category:** Productivity
 - **Summary:** Save the current webpage as a local PDF. Full-page captures, print mode, and simple page cleanup.
-- **Website:** https://pdf.mulhamkassab.dev/
+- **Website:** https://webtopdf.mulhamkassab.dev/
 - **Support:** https://github.com/MulhamKassab/pagepress/issues
-- **Privacy policy:** https://pdf.mulhamkassab.dev/privacy
+- **Privacy policy:** https://webtopdf.mulhamkassab.dev/privacy
 - **Languages:** English
 
 Suggested description:

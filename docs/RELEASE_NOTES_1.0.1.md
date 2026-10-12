@@ -4,7 +4,7 @@ Save the current webpage as a PDF on your device. Full-page and viewport visual 
 
 This update shares Chrome's capture-rate limit across consecutive exports, so rapidly saving several current views no longer risks exceeding the browser quota. The regression test checks three consecutive exports.
 
-Download the ZIP, extract it, and use Chrome's Extensions page → Developer mode → Load unpacked. Keep the extracted folder in place. The installation guide and working sample PDF demo are at https://pdf.mulhamkassab.dev/install. Existing unpacked installations can replace their extracted files and click Reload on Chrome's Extensions page.
+Download the ZIP, extract it, and use Chrome's Extensions page → Developer mode → Load unpacked. Keep the extracted folder in place. The installation guide and working sample PDF demo are at https://webtopdf.mulhamkassab.dev/install. Existing unpacked installations can replace their extracted files and click Reload on Chrome's Extensions page.
 
 Visual PDFs preserve the page's appearance as images. Use Print PDF for selectable text where the website supports it. Protected pages and some long or changing layouts have browser limitations.
 

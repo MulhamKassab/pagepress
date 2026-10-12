@@ -1,0 +1,38 @@
+webTopdf 1.1.0 — Chrome Web Store privacy fields
+
+SINGLE PURPOSE DESCRIPTION
+webTopdf lets the user save the currently selected webpage as a PDF on their device, using full-page or current-view capture or Chrome's print preview, with optional page cleanup and paper settings.
+
+ACTIVETAB JUSTIFICATION
+Provides temporary access to the tab the user chooses when invoking webTopdf. The extension reads that page's title, URL and dimensions and captures its visible rendering for the requested PDF. It does not request persistent access to all websites.
+
+SCRIPTING JUSTIFICATION
+Runs packaged scripts on the chosen tab to measure and scroll the page, temporarily hide selected elements or simplify its print layout, and restore page styles and scroll position after completion, cancellation or a recoverable error.
+
+DOWNLOADS JUSTIFICATION
+Saves the locally generated PDF to the user's device and provides Show in Downloads. Tracks completion of the generated download so its temporary file resources can be released.
+
+STORAGE JUSTIFICATION
+Stores export preferences and saved presets locally. Session storage holds the latest export title, progress, selection count and download-recovery state so the popup can show status and recover interrupted exports. No page-export history is recorded.
+
+OFFSCREEN JUSTIFICATION
+Creates a local offscreen extension document to combine screenshots into paginated PDFs using bundled jsPDF and create a Blob URL for downloading the result. This document closes after processing and download cleanup.
+
+REMOTE CODE
+Select: No, I am not using Remote code.
+If a justification remains available: All JavaScript, including jsPDF, is included in the uploaded extension package. No remotely hosted JavaScript or WebAssembly is loaded or executed.
+
+DATA USAGE — RECOMMENDED FOR THIS VERSION
+Select Website content (the chosen page's rendered content), Web history (the selected page's URL/title), and conservatively User activity (temporary pointer/click/scroll handling for cleanup and capture). These categories describe local handling for the chosen export, with no analytics or transmission of captures to the developer.
+Leave the remaining categories unchecked for this version; it does not separately request, extract, or analyze those types of information. User-chosen screenshots can incidentally include sensitive information visible on the page.
+Google's guidance does not explicitly resolve every incidental-content/UI-event classification. These selections are a conservative interpretation of the current implementation, not a guarantee of the reviewer's classification.
+
+CERTIFICATIONS
+All three statements match the current implementation: data is not sold or transferred outside approved uses, is used only for the single purpose, and is not used for creditworthiness or lending. Review and tick each certification yourself.
+
+PRIVACY POLICY URL
+https://webtopdf.mulhamkassab.dev/privacy
+
+Official guidance:
+https://developer.chrome.com/docs/webstore/program-policies/user-data-faq
+https://developer.chrome.com/docs/webstore/cws-dashboard-privacy

@@ -20,3 +20,8 @@ Use these facts to complete the dashboard's current data-use questions. Do not d
 
 PRIVACY POLICY
 https://webtopdf.mulhamkassab.dev/privacy
+
+ELEMENT-SELECTION INTERACTIONS
+Pointer movement, clicks, Escape handling, and scroll positions are used temporarily and locally for selecting elements, aligning screenshots, and restoring page state. No mouse-movement, click, or keystroke log is retained.
+
+For paste-ready dashboard fields and recommended category selections, use privacy-form.txt.

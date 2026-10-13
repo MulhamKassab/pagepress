@@ -24,6 +24,7 @@ const server = createServer(async (request, response) => {
 });
 await new Promise(r => server.listen(0, '127.0.0.1', r));
 const url = `http://127.0.0.1:${server.address().port}/`;
+const storeUrl = 'https://chromewebstore.google.com/detail/webtopdf/mjaclamnjdmipobljileifmgkppiaeeb';
 const report = { origin: url, tests: [], browserErrors: [] };
 let browser;
 try {
@@ -33,7 +34,17 @@ try {
   page.on('pageerror', error => report.browserErrors.push(error.message));
   page.on('response', response => { if (response.status() >= 400) report.browserErrors.push(`${response.status()} ${response.url()}`); });
   await page.goto(url);
-  if (await page.locator('h1').count() !== 1 || await page.locator('ol li').count() < 3) throw new Error('Download page is missing its heading or installation steps.');
+  if (await page.locator('h1').count() !== 1 || await page.locator('.installation-card > ol > li').count() !== 3) throw new Error('Installation page is missing its heading or store installation steps.');
+  for (const path of ['', 'install']) {
+    await page.goto(url + path);
+    const storeLink = page.getByTestId('chrome-store-link');
+    if (!(await storeLink.isVisible()) || await storeLink.getAttribute('href') !== storeUrl || await storeLink.getAttribute('target') !== '_blank') throw new Error(`Chrome Web Store link is missing or incorrect on ${path || 'home'}.`);
+    if ((await page.locator('body').textContent()).includes('not yet on the Chrome Web Store')) throw new Error('Outdated store availability notice remains.');
+    if (await page.getByTestId('download-extension').isVisible()) throw new Error('Manual download should be inside the optional installation disclosure.');
+    report.tests.push({ test: `Chrome Web Store installation on ${path || 'home'}`, href: storeUrl });
+  }
+  await page.goto(url);
+  await page.locator('.manual-install > summary').click();
   await page.getByTestId('copy-extensions').click();
   const copied = await page.evaluate(() => navigator.clipboard.readText());
   if (copied !== 'chrome://extensions') throw new Error('Extensions address was not copied.');
@@ -60,6 +71,7 @@ try {
     }
   }
   await page.goto(url);
+  await page.locator('.manual-install > summary').click();
   await page.evaluate(() => { Object.defineProperty(navigator.clipboard, 'writeText', { configurable: true, value: async () => { throw new DOMException('Clipboard unavailable', 'NotAllowedError'); } }); });
   await page.getByTestId('copy-extensions').click();
   const fallback = await page.getByTestId('copy-status').textContent();
@@ -68,8 +80,10 @@ try {
   const noJsContext = await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: false });
   const noJsPage = await noJsContext.newPage();
   await noJsPage.goto(url);
-  if (!(await noJsPage.getByTestId('download-extension').isVisible()) || !(await noJsPage.locator('body').textContent()).includes('chrome://extensions')) throw new Error('Instructions and download must work without JavaScript.');
-  report.tests.push({ test: 'Instructions and download available without JavaScript' });
+  if (!(await noJsPage.getByTestId('chrome-store-link').isVisible()) || await noJsPage.getByTestId('chrome-store-link').getAttribute('href') !== storeUrl) throw new Error('Store installation must work without JavaScript.');
+  await noJsPage.locator('.manual-install > summary').click();
+  if (!(await noJsPage.getByTestId('download-extension').isVisible()) || !(await noJsPage.locator('body').textContent()).includes('chrome://extensions')) throw new Error('Manual instructions and download must work without JavaScript.');
+  report.tests.push({ test: 'Store and manual installation available without JavaScript' });
   if (report.browserErrors.length) throw new Error('Browser page errors or HTTP failures.');
   report.passed = true;
 } catch (error) { report.error = error.stack; report.passed = false; }

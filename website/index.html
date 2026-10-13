@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Download webTopdf for Chrome, install it once, and save webpages as PDFs on your device.">
+  <meta name="description" content="Get webTopdf from the Chrome Web Store and save webpages as PDFs on your device.">
   <meta name="theme-color" content="#f6f3eb">
   <title>webTopdf — Save webpages as PDF</title>
   <link rel="icon" type="image/svg+xml" href="/brand/logo.svg"><link rel="stylesheet" href="/styles.css">
@@ -15,19 +15,27 @@
     <p class="eyebrow"><span aria-hidden="true"></span> WEB TO PDF · CHROME EXTENSION</p>
     <h1 id="page-title">Save webpages<br>as a <em>PDF.</em></h1>
     <p class="intro-text">Install webTopdf once. Then open a webpage and save it as a PDF, right from Chrome.</p>
-    <a class="download-button" data-testid="download-extension" href="/downloads/webtopdf-extension.zip" download="webtopdf-extension.zip">Download for Chrome <span aria-hidden="true">↓</span></a>
-    <p class="download-meta">ZIP download · Chrome 116 or newer</p>
+    <a class="download-button" data-testid="chrome-store-link" href="https://chromewebstore.google.com/detail/webtopdf/mjaclamnjdmipobljileifmgkppiaeeb" target="_blank" rel="noopener noreferrer">Add to Chrome <span aria-hidden="true">↗</span></a>
+    <p class="download-meta">Available on the Chrome Web Store · Chrome 116 or newer</p>
     <p class="local-note"><span aria-hidden="true">✓</span> On your device. No account. No page uploads.</p>
-    <p class="beta-note">Manual installation for now. webTopdf is not yet on the Chrome Web Store.</p>
+    <p class="install-note">Install from the store, pin webTopdf, and save your first webpage.</p>
   </section>
   <section class="installation-card" id="install" aria-labelledby="installation-title">
     <div class="card-heading"><h2 id="installation-title">Get started in 3 steps</h2><span>ONE-TIME SETUP</span></div>
     <ol class="install-steps">
-      <li><div><h3>Download and extract</h3><p>Download the ZIP above and unzip it into a folder you can keep.</p></div></li>
-      <li><div><h3>Add it to Chrome</h3><p>Paste this into Chrome’s address bar:</p><div class="address-row"><code>chrome://extensions</code><button type="button" data-testid="copy-extensions" aria-label="Copy Chrome extensions address" hidden>Copy</button></div><p class="copy-status" data-testid="copy-status" role="status" aria-live="polite"></p><p>Turn on <strong>Developer mode</strong>, click <strong>Load unpacked</strong>, and choose the extracted folder containing <code>manifest.json</code>.</p></div></li>
-      <li><div><h3>Open a page and save</h3><p>Pin webTopdf from Chrome’s extensions menu. Open a webpage, click webTopdf, then <strong>Save as PDF</strong>.</p></div></li>
+      <li><div><h3>Add it to Chrome</h3><p>Click <strong>Add to Chrome</strong> above to open the Chrome Web Store. Choose <strong>Add to Chrome</strong> on the listing and confirm <strong>Add extension</strong>.</p></div></li>
+      <li><div><h3>Pin webTopdf</h3><p>Open Chrome’s extensions menu beside the address bar and pin <strong>webTopdf</strong> for quick access.</p></div></li>
+      <li><div><h3>Open a page and save</h3><p>Open a webpage, click webTopdf, choose your export settings, then <strong>Save as PDF</strong>.</p></div></li>
     </ol>
     <p class="mode-note">Visual PDF keeps the page’s appearance as images. For selectable text, choose <strong>Searchable print</strong> in the extension.</p>
+    <details class="manual-install">
+      <summary>Prefer a manual installation?</summary>
+      <ol class="install-steps">
+        <li><div><h3>Download and extract</h3><p><a data-testid="download-extension" href="/downloads/webtopdf-extension.zip" download="webtopdf-extension.zip">Download the extension ZIP</a> and unzip it into a folder you can keep.</p></div></li>
+        <li><div><h3>Load the unpacked extension</h3><p>Paste this into Chrome’s address bar:</p><div class="address-row"><code>chrome://extensions</code><button type="button" data-testid="copy-extensions" aria-label="Copy Chrome extensions address" hidden>Copy</button></div><p class="copy-status" data-testid="copy-status" role="status" aria-live="polite"></p><p>Turn on <strong>Developer mode</strong>, click <strong>Load unpacked</strong>, and choose the extracted folder containing <code>manifest.json</code>.</p></div></li>
+      </ol>
+      <p class="mode-note">Keep the extracted folder in place. To update a manual installation, replace its files and click <strong>Reload</strong> at <code>chrome://extensions</code>.</p>
+    </details>
   </section>
 </main>
 <p class="page-note">Works on ordinary webpages. Chrome’s internal and protected pages cannot be captured.</p>

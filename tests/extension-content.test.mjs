@@ -154,3 +154,138 @@ test('a small scrollable box on an otherwise one-screen page is not treated as t
   assert.equal(prepare.ok, true, prepare.error);
   assert.equal(prepare.data.scroller, false);
 });
+
+const prepareOptions = { hideSticky: true, loadImages: false, scope: 'full' };
+
+test('a PDF shown by the browser is refused with a clear message instead of a one-screen screenshot', async () => {
+  const page = harness();
+  page.context.document.contentType = 'application/pdf';
+  const prepare = await page.message('PREPARE', { options: prepareOptions });
+  assert.equal(prepare.ok, false);
+  assert.match(prepare.error, /PDF file.*download button/);
+});
+
+test('fixed elements inside shadow roots are hidden like ordinary ones and restored afterwards', async () => {
+  const page = harness({ elements: [] });
+  const shadowFixed = page.element('fixed');
+  const host = Object.assign(page.element('static'), { shadowRoot: { querySelectorAll: (selector) => (selector === '*' ? [shadowFixed] : []) } });
+  const original = page.context.document.querySelectorAll;
+  page.context.document.querySelectorAll = (selector) => [...original(selector), ...(selector === 'body *' ? [host] : [])];
+  await page.message('PREPARE', { options: prepareOptions });
+  await page.message('MOVE', { x: 0, y: 1000, hideSticky: true, scope: 'full' });
+  assert.equal(shadowFixed.style.getPropertyValue('visibility'), 'hidden');
+  await page.message('RESTORE');
+  assert.equal(shadowFixed.style.getPropertyValue('visibility'), '');
+});
+
+test('fixed elements are collected once and re-scanned only after the page changed', async () => {
+  const page = harness();
+  let trigger;
+  page.context.MutationObserver = class { constructor(callback) { trigger = callback; } observe() {} disconnect() {} };
+  const calls = [];
+  const original = page.context.getComputedStyle;
+  page.context.getComputedStyle = (node) => { calls.push(node); return original(node); };
+  await page.message('PREPARE', { options: prepareOptions });
+  await page.message('MOVE', { x: 0, y: 600, hideSticky: true, scope: 'full' });
+  assert.ok(calls.includes(page.paragraph), 'the first move scans everything');
+  calls.length = 0;
+  await page.message('MOVE', { x: 0, y: 1000, hideSticky: true, scope: 'full' });
+  assert.ok(!calls.includes(page.paragraph) && !calls.includes(page.heading), 'later moves only re-check known fixed elements');
+  trigger([{ attributeName: 'class', target: page.paragraph }]);
+  calls.length = 0;
+  await page.message('MOVE', { x: 0, y: 1000, hideSticky: true, scope: 'full' });
+  assert.ok(calls.includes(page.paragraph), 'a class change on the page triggers a new scan');
+  await page.message('RESTORE');
+});
+
+test('keyboard picking: Tab and arrows move the outline, Enter hides, Escape stops, and a hint bar explains it', async () => {
+  const page = harness();
+  const created = [];
+  const createElement = page.context.document.createElement;
+  page.context.document.createElement = (tag) => { const node = createElement(tag); created.push(node); return node; };
+  page.heading.nextElementSibling = page.toolbar;
+  await page.message('SELECT');
+  const [overlay, hint] = created;
+  assert.match(hint.textContent, /Tab and the arrow keys.*Enter.*Escape/);
+  assert.equal(hint.attributes.get('role'), 'status');
+  assert.equal(hint.dataset.pagepress, 'hint');
+  const press = (key, extra = {}) => { let prevented = false; page.events.get('keydown')({ key, preventDefault() { prevented = true; }, stopImmediatePropagation() {}, ...extra }); return prevented; };
+  assert.equal(press('Tab'), true);
+  assert.equal(overlay.style.display, 'block', 'the first Tab outlines the first element');
+  assert.match(hint.textContent, /Selected: /);
+  assert.equal(press('ArrowRight'), true);
+  assert.equal(press('Enter'), true);
+  assert.equal(page.toolbar.style.getPropertyValue('display'), 'none', 'the outlined element was hidden');
+  assert.equal(page.heading.style.getPropertyValue('display'), '');
+  assert.equal(press('Escape'), true);
+  assert.equal(hint.removed, true);
+  assert.equal(overlay.removed, true);
+  assert.equal(page.events.has('keydown'), false, 'the keyboard handler is removed');
+  const undone = await page.message('UNDO');
+  assert.equal(undone.data.count, 0);
+  assert.equal(page.toolbar.style.getPropertyValue('display'), '');
+});
+
+test('clean print hides site navigation but keeps navigation inside the article', async () => {
+  const page = harness({ elements: [] });
+  const site = Object.assign(page.element('static'), { matches: () => true, closest: () => null });
+  const inArticle = Object.assign(page.element('static'), { matches: () => true, closest: () => ({}) });
+  const original = page.context.document.querySelectorAll;
+  page.context.document.querySelectorAll = (selector) => [...original(selector), ...(selector === 'body *' ? [site, inArticle] : [])];
+  const printed = await page.message('PRINT', { options: { cleanPrint: true, paper: 'a4', orientation: 'portrait', margin: 12 } });
+  assert.equal(printed.ok, true, printed.error);
+  assert.equal(site.getAttribute('data-pagepress-hide'), '');
+  assert.equal(inArticle.getAttribute('data-pagepress-hide'), null, 'a table of contents inside the article is kept');
+  await page.message('RESTORE');
+  assert.equal(site.getAttribute('data-pagepress-hide'), null);
+});
+
+test('images that start loading as they scroll into view are awaited before the screenshot', async () => {
+  const page = harness();
+  const image = Object.assign(page.element('static'), { complete: false, async decode() { await new Promise((resolve) => setTimeout(resolve, 40)); image.complete = true; } });
+  await page.message('PREPARE', { options: { ...prepareOptions, loadImages: false } });
+  page.context.document.images.push(image);
+  await page.message('MOVE', { x: 0, y: 600, hideSticky: false, scope: 'full' });
+  assert.equal(image.complete, true);
+});
+
+test('native lazy images are switched to eager while loading images, then put back', async () => {
+  const page = harness();
+  const image = Object.assign(page.element('static'), { complete: true });
+  image.setAttribute('loading', 'lazy');
+  page.context.document.images.push(image);
+  await page.message('PREPARE', { options: { ...prepareOptions, loadImages: true } });
+  assert.equal(image.getAttribute('loading'), 'eager');
+  await page.message('RESTORE');
+  assert.equal(image.getAttribute('loading'), 'lazy');
+});
+
+test('an anchor near the middle of the first screen reports how far the page content moved', async () => {
+  const page = harness();
+  let moved = 0;
+  const anchor = Object.assign(page.element('static'), { isConnected: true, parentElement: null, getBoundingClientRect() { return { left: 0, right: 800, width: 800, height: 50, top: 300 - page.context.scrollY + moved, bottom: 350 }; } });
+  page.context.document.elementFromPoint = () => anchor;
+  await page.message('PREPARE', { options: prepareOptions });
+  const steady = await page.message('MOVE', { x: 0, y: 1000, hideSticky: false, scope: 'full' });
+  assert.equal(steady.data.anchorShift, 0);
+  moved = -80;
+  const shifted = await page.message('MOVE', { x: 0, y: 920, hideSticky: false, scope: 'full' });
+  assert.equal(shifted.data.anchorShift, -80);
+  anchor.isConnected = false;
+  assert.equal((await page.message('MOVE', { x: 0, y: 920, hideSticky: false, scope: 'full' })).data.anchorShift, null);
+});
+
+test('a new extension version replaces a stale copy of the script; the same version does not register twice', async () => {
+  const page = harness();
+  const registered = [];
+  page.context.chrome.runtime.onMessage.addListener = (listener) => registered.push(listener);
+  page.context.chrome.runtime.id = 'webtopdf-test';
+  page.context.chrome.runtime.getManifest = () => ({ version: '1.2.0' });
+  vm.runInContext(source, page.context);
+  assert.equal(registered.length, 1);
+  vm.runInContext(source, page.context);
+  assert.equal(registered.length, 1, 'same version: already installed');
+  page.context.chrome.runtime.getManifest = () => ({ version: '1.2.1' });
+  vm.runInContext(source, page.context);
+  assert.equal(registered.length, 2, 'new version: install again');
+});

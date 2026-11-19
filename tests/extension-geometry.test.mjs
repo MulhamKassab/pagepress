@@ -12,6 +12,10 @@ import {
   tileCrop,
   toNativeScrollX,
   toVisualScrollX,
+  observedShift,
+  estimatePdfBytes,
+  MAX_ESTIMATED_BYTES,
+  MIN_READABLE_SCALE,
 } from '../extension/lib/geometry.js';
 
 const defaults = {
@@ -268,4 +272,30 @@ test('right-to-left scroll positions map to a left-to-right plan and back', () =
   const natives = tiles.map((tile) => toNativeScrollX(tile.scrollX, true, 800));
   assert.deepEqual(natives, [-800, 0], 'tile 0 is the left part, tile 1 the right part');
   for (const tile of tiles) assert.equal(toVisualScrollX(toNativeScrollX(tile.scrollX, true, 800), true, 800), tile.scrollX);
+});
+
+test('the anchor element decides the shift when the page reports one, otherwise the page height does', () => {
+  assert.equal(observedShift(2480, { height: 2400, anchorShift: -80 }), -80);
+  assert.equal(observedShift(2480, { height: 2480, anchorShift: 150 }), 150, 'content inserted above shifts later tiles down');
+  assert.equal(observedShift(2480, { height: 2400, anchorShift: 1 }), 0, 'a height change elsewhere does not move the tiles');
+  assert.equal(observedShift(2480, { height: 2400, anchorShift: null }), -80, 'no anchor: fall back to the height');
+  assert.equal(observedShift(2480, { height: 2400 }), -80);
+});
+
+test('device pixel ratio is capped at 2 and a huge job is estimated before capturing', () => {
+  const metrics = { width: 1000, height: 3000, viewportWidth: 1000, viewportHeight: 800, devicePixelRatio: 3 };
+  const layout = pdfLayout(metrics, { quality: 'high' });
+  assert.equal(layout.canvasWidth, 2000, '1000 css px at 2x, not 3x');
+  const bytes = estimatePdfBytes(layout, { quality: 'high' });
+  assert.ok(bytes > 0 && bytes < MAX_ESTIMATED_BYTES, 'an ordinary page is far below the limit');
+  assert.ok(estimatePdfBytes(layout, { quality: 'compact' }) < estimatePdfBytes(layout, { quality: 'balanced' }));
+  const huge = pdfLayout({ width: 1200, height: 100000, viewportWidth: 1200, viewportHeight: 900, devicePixelRatio: 2 }, { quality: 'high' });
+  assert.ok(estimatePdfBytes(huge, { quality: 'high' }) > MAX_ESTIMATED_BYTES, 'a very long page at High quality is refused');
+});
+
+test('very wide pages are flagged as drawn small', () => {
+  const wide = pdfLayout({ width: 10000, height: 800, viewportWidth: 1000, viewportHeight: 800, devicePixelRatio: 1 }, {});
+  assert.ok(wide.pixelScale < MIN_READABLE_SCALE);
+  const normal = pdfLayout({ width: 1800, height: 800, viewportWidth: 1000, viewportHeight: 800, devicePixelRatio: 1 }, {});
+  assert.ok(normal.pixelScale >= MIN_READABLE_SCALE);
 });

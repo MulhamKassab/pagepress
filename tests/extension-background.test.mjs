@@ -28,9 +28,10 @@ async function harness(config = {}) {
   const state = {
     activeTab: { ...page }, session: {}, local: {}, events: [], content: [], offscreen: [],
     downloads: [], captures: [], captureTimestamps: [], statusHistory: [], queryCount: 0, closed: 0,
-    scrollX: 0, scrollY: 0,
+    scrollX: 0, scrollY: 0, titles: [], injected: [], alive: !config.aliveFails,
   };
-  let listener;
+  const m = { ...metrics, ...(config.metrics || {}) };
+  let listener, commandListener;
   function store(name) {
     return {
       async get(key) { return { [key]: state[name][key] }; },
@@ -43,8 +44,8 @@ async function harness(config = {}) {
   }
   globalThis.chrome = {
     storage: { session: store('session'), local: store('local') },
-    action: { async setBadgeBackgroundColor() {}, async setBadgeText() {} },
-    scripting: { async executeScript() { state.events.push('inject'); } },
+    action: { async setBadgeBackgroundColor() {}, async setBadgeText() {}, async setTitle(details) { state.titles.push(details.title); } },
+    scripting: { async executeScript(details) { state.events.push('inject'); state.injected.push(details); if (config.injectFails) throw new Error('Cannot access contents of the page.'); state.alive = true; } },
     tabs: {
       onUpdated: { addListener(value) { state.onUpdated = value; } },
       async query() {
@@ -60,7 +61,7 @@ async function harness(config = {}) {
         state.events.push(`content:${message.type}`);
         if (message.type === 'PREPARE') {
           if (config.prepareGate) await config.prepareGate.promise;
-          return { ok: true, data: { ...metrics } };
+          return { ok: true, data: { ...m } };
         }
         if (message.type === 'MOVE') {
           state.scrollX = message.x;
@@ -71,17 +72,21 @@ async function harness(config = {}) {
             state.onUpdated(page.id, config.sameDocumentUrlChange === 'loading' ? { url: state.activeTab.url, status: 'loading' } : { url: state.activeTab.url });
           }
           if (config.navigateDuringMove) state.onUpdated(page.id, { status: 'loading' });
-          const height = config.heightAfterMove ? config.heightAfterMove(message, state) : metrics.height;
-          return { ok: true, data: { ...metrics, height, x: message.x, y: message.y } };
+          if (config.moveRejects) throw new Error(config.moveRejects);
+          const height = config.heightAfterMove ? config.heightAfterMove(message, state) : m.height;
+          return { ok: true, data: { ...m, height, x: message.x, y: message.y, anchorShift: config.anchorShift ? config.anchorShift(message) : undefined } };
         }
         if (message.type === 'METRICS') {
           return { ok: true, data: {
-            ...metrics, scrollX: state.scrollX,
+            ...m, scrollX: state.scrollX,
             scrollY: state.scrollY + (config.manualScroll ? 15 : 0),
           } };
         }
         if (message.type === 'RESTORE') return { ok: true, data: {} };
-        if (message.type === 'ALIVE') return { ok: true, data: { capturing: !config.navigateDuringMove } };
+        if (message.type === 'ALIVE') {
+          if (!state.alive) throw new Error('Could not establish connection. Receiving end does not exist.');
+          return { ok: true, data: { capturing: !config.navigateDuringMove } };
+        }
         throw new Error(`Unexpected content command ${message.type}`);
       },
       async captureVisibleTab(windowId, captureOptions) {
@@ -112,10 +117,10 @@ async function harness(config = {}) {
     downloads: {
       onChanged: { addListener() {} },
       async download(download) { state.downloads.push(download); state.events.push('download'); return 42; },
-      async search({ id }) { assert.equal(id, 42); return [{ id, state: 'complete' }]; },
+      async search({ id }) { assert.equal(id, 42); return [{ id, state: config.downloadPending && !state.downloadDone ? 'in_progress' : 'complete' }]; },
       async show() {},
     },
-    commands: { onCommand: { addListener() {} } },
+    commands: { onCommand: { addListener(value) { commandListener = value; } } },
   };
   await import(`../extension/background.js?case=${++caseNumber}`);
   assert.equal(typeof listener, 'function');
@@ -123,7 +128,7 @@ async function harness(config = {}) {
     assert.equal(listener({ target: 'background', ...message }, { id: runtimeID }, resolve), true);
   });
   const settled = () => until(() => state.closed > 0, 'export cleanup');
-  return { state, send, settled };
+  return { state, send, settled, shortcut: () => commandListener("export-page") };
 }
 
 after(() => {
@@ -133,7 +138,7 @@ after(() => {
 
 test('successful export restores the page, downloads the PDF, and releases its Blob', async () => {
   const { state, send, settled } = await harness();
-  const started = await send({ type: 'EXPORT', options: {} });
+  const started = await send({ type: 'EXPORT', options: { quality: 'high' } });
   assert.equal(started.ok, true, started.error);
   assert.equal(started.data.started, true);
   await settled();
@@ -324,4 +329,115 @@ test('a browser that reports "loading" for a hash change still exports while the
   await settled();
   assert.equal(state.session.exportStatus.phase, 'done', state.session.exportStatus.message);
   assert.ok(state.content.some((message) => message.type === 'ALIVE'));
+});
+
+test('balanced and compact quality capture JPEG screenshots; only High uses PNG', async () => {
+  for (const [quality, expected] of [['balanced', { format: 'jpeg', quality: 92 }], ['compact', { format: 'jpeg', quality: 80 }], ['high', { format: 'png' }]]) {
+    const { state, send, settled } = await harness();
+    assert.equal((await send({ type: 'EXPORT', options: { quality } })).ok, true);
+    await settled();
+    assert.equal(state.session.exportStatus.phase, 'done');
+    assert.ok(state.captures.every((capture) => JSON.stringify(capture.options) === JSON.stringify(expected)), quality);
+  }
+});
+
+test('unsupported pages are refused with the shared explanation before anything is injected', async () => {
+  for (const [url, pattern] of [['chrome://version', /Settings, Extensions/], ['https://chromewebstore.google.com/detail/x', /web store/i], ['ftp://example.com/', /normal webpages/]]) {
+    const { state, send } = await harness();
+    state.activeTab = { ...page, url };
+    const response = await send({ type: 'EXPORT', options: {} });
+    assert.equal(response.ok, false);
+    assert.match(response.error, pattern);
+    assert.equal(state.injected.length, 0);
+  }
+});
+
+test('a page whose script is dead after an extension update gets a fresh injection; a live one does not', async () => {
+  const dead = await harness({ aliveFails: true });
+  assert.equal((await dead.send({ type: 'EXPORT', options: {} })).ok, true);
+  await dead.settled();
+  assert.equal(dead.state.session.exportStatus.phase, 'done', dead.state.session.exportStatus.message);
+  assert.equal(dead.state.injected.length, 2, 'clear the stale guard, then inject content.js');
+  assert.deepEqual(dead.state.injected[1].files, ['content.js']);
+  const live = await harness();
+  assert.equal((await live.send({ type: 'EXPORT', options: {} })).ok, true);
+  await live.settled();
+  assert.equal(live.state.injected.length, 0);
+});
+
+test('a PDF address whose viewer refuses injection explains that it is already a PDF', async () => {
+  const { state, send, settled } = await harness({ aliveFails: true, injectFails: true });
+  state.activeTab = { ...page, url: 'https://example.com/report.pdf' };
+  assert.equal((await send({ type: 'EXPORT', options: {} })).ok, true);
+  await settled();
+  assert.equal(state.session.exportStatus.phase, 'error');
+  assert.match(state.session.exportStatus.message, /PDF/);
+  assert.match(state.session.exportStatus.message, /download button/);
+});
+
+test('raw browser errors become plain messages with a next step', async () => {
+  const { state, send, settled } = await harness({ moveRejects: 'Could not establish connection. Receiving end does not exist.' });
+  assert.equal((await send({ type: 'EXPORT', options: {} })).ok, true);
+  await settled();
+  assert.equal(state.session.exportStatus.phase, 'error');
+  assert.match(state.session.exportStatus.message, /lost contact with the page/);
+  assert.doesNotMatch(state.session.exportStatus.message, /Receiving end/);
+  assert.equal(state.session.exportStatus.error, 'Receiving end does not exist.'.length ? state.session.exportStatus.error : '', 'the raw text is kept in the error field for the problem report');
+});
+
+test('a failed keyboard-shortcut export puts the reason in the toolbar tooltip', async () => {
+  const { state, shortcut } = await harness();
+  state.activeTab = { ...page, url: 'chrome://extensions' };
+  await shortcut();
+  await until(() => state.session.exportStatus?.phase === 'error', 'the shortcut failure');
+  assert.match(state.titles.at(-1), /^webTopdf: Browser pages like Settings/);
+});
+
+test('the next export can start as soon as the download was handed to Chrome', async () => {
+  const { state, send } = await harness({ downloadPending: true });
+  assert.equal((await send({ type: 'EXPORT', options: { scope: 'viewport' } })).ok, true);
+  await until(() => state.session.exportStatus?.phase === 'done', 'the first export');
+  const second = await send({ type: 'EXPORT', options: { scope: 'viewport' } });
+  assert.equal(second.ok, true, second.error);
+  await until(() => state.downloads.length === 2, 'the second download');
+  state.downloadDone = true;
+  await until(() => Object.keys(state.session.pendingDownloads || {}).length === 0 && state.closed > 0, 'both downloads released');
+  await new Promise((resolve) => setTimeout(resolve, 300)); // let both background loops finish before the next test swaps the chrome mock
+});
+
+test('fixed elements stay visible on the whole first row of a wide page', async () => {
+  const { state, send, settled } = await harness({ metrics: { width: 1800, height: 1000, viewportWidth: 800, viewportHeight: 600, innerWidth: 800, innerHeight: 600 } });
+  assert.equal((await send({ type: 'EXPORT', options: { hideSticky: true } })).ok, true);
+  await settled();
+  assert.equal(state.session.exportStatus.phase, 'done', state.session.exportStatus.message);
+  const flags = state.content.filter((message) => message.type === 'MOVE').map((message) => message.hideSticky);
+  assert.deepEqual(flags, [false, false, false, true, true, true], 'three columns in row 0, three in row 1');
+});
+
+test('an absurdly large job is refused before any capture with a clear message', async () => {
+  const { state, send, settled } = await harness({ metrics: { width: 1200, height: 100000, viewportWidth: 1200, viewportHeight: 1300, innerWidth: 1200, innerHeight: 1300, devicePixelRatio: 2 } });
+  assert.equal((await send({ type: 'EXPORT', options: { quality: 'high' } })).ok, true);
+  await settled();
+  assert.equal(state.session.exportStatus.phase, 'error');
+  assert.match(state.session.exportStatus.message, /too large to turn into a PDF/);
+  assert.equal(state.captures.length, 0);
+});
+
+test('content inserted above the current position retargets later tiles and warns', async () => {
+  const { state, send, settled } = await harness({ anchorShift: (message) => (message.y > 0 ? 120 : 0) });
+  assert.equal((await send({ type: 'EXPORT', options: {} })).ok, true);
+  await settled();
+  assert.equal(state.session.exportStatus.phase, 'done', state.session.exportStatus.message);
+  assert.deepEqual(state.content.filter((message) => message.type === 'MOVE').map((message) => message.y), [0, 400, 520]);
+  assert.match(state.session.exportStatus.message, /added above your position/);
+});
+
+test('a PDF processing process that never answers explains the likely cause', async () => {
+  const { state, send, settled } = await harness();
+  const original = chrome.runtime.sendMessage;
+  chrome.runtime.sendMessage = async (message) => (message.type === 'TILE' ? undefined : original(message));
+  assert.equal((await send({ type: 'EXPORT', options: {} })).ok, true);
+  await settled();
+  assert.equal(state.session.exportStatus.phase, 'error');
+  assert.match(state.session.exportStatus.message, /did not respond.*Compact quality/);
 });

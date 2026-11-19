@@ -49,6 +49,9 @@ const white = [255, 255, 255];
 const bands = (count, height, first = 0) => Array.from({ length: count }, (_, i) => `<div style="height:${height}px;background:${palette[first + i]}"></div>`).join('');
 const doc = (head, body, attrs = '') => `<!doctype html><html${attrs}><head><meta charset="utf-8"><title>webTopdf smoke fixture</title><style>html,body{margin:0}${head}</style></head><body>${body}</body></html>`;
 const stripes = (n, h, first = 0, y0 = 0) => (width) => Array.from({ length: n }, (_, i) => ({ x: 0, y: y0 + i * h, w: width, h, c: first + i }));
+// Twelve bands, each an image that only loads late: half use native loading="lazy", half are
+// set by an IntersectionObserver when they scroll into view (the server delays every image).
+const lazyHtml = doc('img{display:block;width:100%;height:300px;object-fit:fill}', Array.from({ length: 12 }, (_, i) => (i % 2 ? `<img data-src="/slow/${i}.svg" alt="">` : `<img loading="lazy" src="/slow/${i}.svg" alt="">`)).join('') + `<script>const io=new IntersectionObserver((entries)=>{for(const e of entries)if(e.isIntersecting&&e.target.dataset.src){e.target.src=e.target.dataset.src;delete e.target.dataset.src;io.unobserve(e.target)}});document.querySelectorAll('img[data-src]').forEach((i)=>io.observe(i))</script>`);
 const fixtures = [
   {
     name: 'rtl-wide', path: '/rtl', width: 1800, title: 'RTL wide page: columns appear in visual left-to-right order',
@@ -74,6 +77,20 @@ const fixtures = [
     layout: (width) => ({ height: 2480, cells: [{ x: 0, y: 0, w: width, h: 80, c: 0 }, ...stripes(8, 300, 1, 80)(width)] }),
   },
   {
+    name: 'lazy-images', path: '/lazy', title: 'Slow lazy images appear instead of blank placeholders (images loaded on scroll only)',
+    html: lazyHtml, options: { loadImages: false, quality: 'balanced' },
+    layout: (width) => ({ height: 3600, cells: stripes(12, 300)(width) }),
+  },
+  {
+    name: 'lazy-images-preload', path: '/lazy2', title: 'Slow lazy images appear (Load lazy images option on)',
+    html: lazyHtml, options: { loadImages: true, quality: 'compact' },
+    layout: (width) => ({ height: 3600, cells: stripes(12, 300)(width) }),
+  },
+  {
+    name: 'pdf-tab', path: '/doc.pdf', title: 'A tab showing a PDF is refused with a clear message',
+    expectError: /PDF.*download button/,
+  },
+  {
     name: 'two-columns', path: '/twocol', width: 1800, title: 'Wide LTR page: two columns, three rows',
     html: doc('body{width:1800px}.g{display:grid;grid-template-columns:repeat(2,900px)}.c{height:600px}', `<div class="g">${Array.from({ length: 6 }, (_, i) => `<div class="c" style="background:${palette[i + 6]}"></div>`).join('')}</div>`),
     layout: () => ({ height: 1800, cells: Array.from({ length: 6 }, (_, i) => ({ x: (i % 2) * 900, y: Math.floor(i / 2) * 600, w: 900, h: 600, c: i + 6 })) }),
@@ -88,9 +105,18 @@ html { scroll-behavior: auto; } body { margin: 0; width: 1800px; font: 28px sans
 .fixed { position: fixed; top: 0; left: 0; width: 980px; height: 48px; background: #192432; color: white; z-index: 10; }
 </style></head><body><div class="fixed" id="fixed" style="visibility: visible !important">Fixed header marker</div>${colors.map((color, i) => `<section class="band" id="band${i}" style="background:${color}"><span>BAND ${i + 1} LEFT — independent color marker</span>${i === 4 ? '<div class="sticky" id="sticky" style="left: 12px !important">DEEP STICKY MARKER — must appear once</div>' : ''}<span style="position:absolute;left:1350px">RIGHT ${i + 1}</span></section>`).join('')}</body></html>`;
 await writeFile(join(artifact, 'fixture.html'), html);
-const server = createServer((request, response) => {
+const minimalPdf = '%PDF-1.1\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 200]>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n';
+const server = createServer(async (request, response) => {
   const path = new URL(request.url, 'http://x').pathname;
-  const fixture = fixtures.find((f) => path === f.path || path.startsWith(`${f.path}/`));
+  const slow = /^\/slow\/(\d+)\.svg$/.exec(path);
+  if (slow) {
+    await sleep(700);
+    response.writeHead(200, { 'Content-Type': 'image/svg+xml' });
+    response.end(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" preserveAspectRatio="none"><rect width="10" height="10" fill="${palette[Number(slow[1])]}"/></svg>`);
+    return;
+  }
+  if (path === '/doc.pdf') { response.writeHead(200, { 'Content-Type': 'application/pdf' }); response.end(minimalPdf); return; }
+  const fixture = fixtures.find((f) => f.html && (path === f.path || path.startsWith(`${f.path}/`)));
   response.writeHead(200, { 'Content-Type': 'text/html' });
   response.end(fixture ? fixture.html : html);
 });
@@ -198,13 +224,13 @@ try {
   };
   const download = async (status, name) => {
     let item;
-    for (let attempt = 0; attempt < 100; attempt++) {
+    for (let attempt = 0; attempt < 400; attempt++) {
       [item] = await worker.evaluate(async id => chrome.downloads.search({ id }), status.downloadId);
       if (item?.state === 'complete') break;
       if (item?.state === 'interrupted') throw new Error(`Chrome download interrupted: ${item.error}`);
       await sleep(100);
     }
-    if (item?.state !== 'complete') throw new Error('Chrome download did not complete.');
+    if (item?.state !== 'complete') throw new Error(`Chrome download did not complete (state: ${item?.state}).`);
     const target = join(artifact, name);
     await copyFile(item.filename, target);
     const bytes = await readFile(target);
@@ -266,12 +292,24 @@ try {
     try {
       await step(fixture.name, async () => {
         await worker.evaluate(async () => { await chrome.storage.session.remove('exportStatus'); });
+        if (fixture.expectError) {
+          // A PDF shown by the browser cannot be exported; some headless builds download it instead of showing it.
+          try { await page.goto(url.replace(/\/$/, '') + fixture.path); } catch (error) { entry.skipped = `browser did not show the PDF: ${error.message}`; entry.passed = true; return; }
+          await page.bringToFront();
+          await sleep(500);
+          let message;
+          try { await startExport({ scope: 'full', loadImages: false, footer: false, margin: 0, quality: 'balanced' }); const outcome = await poll(); message = outcome?.phase === 'done' ? 'a screenshot of the PDF viewer was exported as success' : outcome?.message; } catch (error) { message = error.message; }
+          entry.message = message;
+          if (!fixture.expectError.test(message || '')) throw new Error(`Unexpected result for the PDF tab: ${message}`);
+          entry.passed = true;
+          return;
+        }
         await page.goto(url.replace(/\/$/, '') + fixture.path);
         await page.bringToFront();
         await sleep(300);
         const docWidth = fixture.width ?? await page.evaluate(fixture.measure || (() => document.documentElement.clientWidth));
         const layout = fixture.layout(docWidth);
-        const status = await exportAndWait({ scope: 'full', loadImages: false, footer: false, margin: 0, quality: 'high', hideSticky: true });
+        const status = await exportAndWait({ scope: 'full', loadImages: false, footer: false, margin: 0, quality: 'high', hideSticky: true, ...fixture.options });
         Object.assign(entry, await download(status, `${fixture.name}.pdf`));
         if (fixture.expectMessage && !fixture.expectMessage.test(status.message)) throw new Error(`Done message does not mention the scrolling panel: ${status.message}`);
         entry.pixels = await pixelCheck(decoder, entry.path, docWidth, layout);

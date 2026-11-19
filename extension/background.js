@@ -184,17 +184,21 @@ async function exportPage(currentJob) {
     // scan) still holds the download. The Blob is released below or by downloads.onChanged.
     if (job === currentJob) job = null;
     // Keep the Blob alive until Chrome has consumed it, even if the popup closes.
-    let complete = false;
-    for (let attempt = 0; attempt < 40; attempt++) {
-      const [download] = await chrome.downloads.search({ id: downloadId });
-      if (!download || ['complete', 'interrupted'].includes(download.state)) {
-        complete = true;
-        if (download?.state === 'interrupted' && !job) await publish({ phase: 'error', message: t('errorDownload', 'Chrome could not finish the download. Export again or check your Downloads panel.'), error: download.error });
-        break;
+    // A newer export may already be running, so failures here must never reach the
+    // catch below (which would abort that export's offscreen session and status).
+    try {
+      let complete = false;
+      for (let attempt = 0; attempt < 40; attempt++) {
+        const [download] = await chrome.downloads.search({ id: downloadId });
+        if (!download || ['complete', 'interrupted'].includes(download.state)) {
+          complete = true;
+          if (download?.state === 'interrupted' && !job) await publish({ phase: 'error', message: t('errorDownload', 'Chrome could not finish the download. Export again or check your Downloads panel.'), error: download.error });
+          break;
+        }
+        await pause(500);
       }
-      await pause(500);
-    }
-    if (complete) { await offscreen('RELEASE', { url: blobUrl }).catch(() => {}); await forgetDownload(downloadId); blobUrl = null; }
+      if (complete) { await offscreen('RELEASE', { url: blobUrl }).catch(() => {}); await forgetDownload(downloadId); blobUrl = null; }
+    } catch { /* downloads.onChanged releases the Blob when Chrome finishes. */ }
   } catch (error) {
     const message = currentJob.cancelled ? t('statusCanceled', 'Export canceled.') : friendlyError(error.message) || t('errorGeneric', 'Could not export this page.');
     await publish({ phase: currentJob.cancelled ? 'canceled' : 'error', progress: 0, message, error: currentJob.cancelled ? null : error.message });

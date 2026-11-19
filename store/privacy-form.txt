@@ -1,4 +1,4 @@
-webTopdf 1.1.0 — Chrome Web Store privacy fields
+webTopdf 1.2.0 — Chrome Web Store privacy fields
 
 SINGLE PURPOSE DESCRIPTION
 webTopdf lets the user save the currently selected webpage as a PDF on their device, using full-page or current-view capture or Chrome's print preview, with optional page cleanup and paper settings.

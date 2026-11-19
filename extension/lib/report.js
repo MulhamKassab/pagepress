@@ -11,7 +11,8 @@ export function reportUrl(version, userAgent, lastError) {
     '---',
     `webTopdf version: ${version || 'unknown'}`,
     `Browser: ${userAgent || 'unknown'}`,
-    `Last error shown: ${lastError || 'none'}`,
+    // Browser error texts can quote a URL; drop any so no page address leaves the device.
+    `Last error shown: ${lastError ? String(lastError).replace(/\b[a-z][a-z0-9+.-]*:\/\/\S+/gi, '[link removed]') : 'none'}`,
   ].join('\n');
   return `${REPORT_URL}?${new URLSearchParams({ title: 'Problem report', body })}`;
 }

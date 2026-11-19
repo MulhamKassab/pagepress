@@ -18,9 +18,9 @@ A Chrome extension that turns the current webpage into a PDF, with a companion i
 
 The store handles installation and updates. Use **Alt+Shift+P** to export with the last saved settings (subject to other browser shortcut assignments).
 
-### Manual installation
+### For developers: manual installation
 
-The website retains an optional ZIP download under **Prefer a manual installation?** for local development or an unpacked installation.
+The website offers a ZIP under **For developers: manual ZIP** on the home page, for developers and testers only. A manual installation never updates itself, so use the store version for everyday use.
 
 1. Download and unzip `webtopdf-extension.zip` from the website.
 2. Open `chrome://extensions` and enable **Developer mode**.
@@ -48,7 +48,7 @@ Extension icons are tracked, ready to use, and can be regenerated with `python s
 
 ```text
 extension/    Manifest V3 extension, popup, capture engine, local PDF renderer
-website/      Chrome Web Store link, optional ZIP, install guide, and privacy page
+website/      Home page, Help & FAQ (/install), privacy policy, 404, and the developer ZIP
 scripts/      Build, packaging, source checks, and local preview
 tests/        Capture geometry and PDF rendering regression checks
 ```
@@ -63,7 +63,7 @@ Import this repository into Vercel. The root `vercel.json` sets `npm run build` 
 
 Chrome restricts extension access on browser-internal pages and some protected pages. Full-page capture is bounded to avoid excessive memory use. Pages with infinite scrolling, virtualized lists, internal scroll regions, or rapidly changing layouts may need viewport capture or Print PDF. Keep the captured tab active until export finishes. Content that has not loaded is not part of the capture.
 
-The companion website links to the Chrome Web Store, provides an optional extension ZIP, and explains both installation paths. Webpage export runs through the extension in Chrome; the website does not accept arbitrary URLs or fetch pages for conversion.
+The companion website links to the Chrome Web Store, answers common questions, and offers a developer ZIP. Webpage export runs through the extension in Chrome; the website does not accept arbitrary URLs or fetch pages for conversion.
 
 ## License
 

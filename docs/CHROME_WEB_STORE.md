@@ -1,36 +1,43 @@
 # Chrome Web Store release preparation
 
-The public website and personal-beta ZIP are ready. A store release is a separate publisher submission; the website deliberately does not claim that webTopdf is listed in the store.
+webTopdf is live on the Chrome Web Store: https://chromewebstore.google.com/detail/webtopdf/mjaclamnjdmipobljileifmgkppiaeeb. This document describes how updates are prepared and what the listing and privacy declarations should say. Each update is a new package uploaded to the existing item by the publisher (see `store/submission-guide.md`).
 
 ## Package
 
-Run `npm ci && npm run verify`. Upload `.artifacts/webtopdf-extension-v1.1.0.zip`, with `manifest.json` directly at the archive root. The release contains the locally bundled jsPDF library and its MIT license. No remote code runs inside the extension.
+Run `npm ci && npm run verify`. Upload `.artifacts/webtopdf-extension-v<version>.zip` (the version in `extension/manifest.json`), with `manifest.json` directly at the archive root. The release contains the locally bundled jsPDF library and its MIT license. No remote code runs inside the extension.
 
-## Listing draft
+## Listing (live text, kept in `store/listing.txt`)
 
 - **Name:** webTopdf
 - **Publisher display name:** Mulham Kassab
 - **Category:** Productivity
-- **Summary:** Save the current webpage as a local PDF. Full-page captures, print mode, and simple page cleanup.
+- **Summary:** Save webpages as a PDF on your device. Full-page capture, browser print and page cleanup. By Mulham Kassab.
 - **Homepage:** https://mulhamkassab.dev/
 - **Product website:** https://webtopdf.mulhamkassab.dev/
-- **Support:** https://github.com/MulhamKassab/pagepress/issues
+- **Support:** https://webtopdf.mulhamkassab.dev/install (Help & FAQ), the developer email shown on the listing, and GitHub issues for non-private reports
 - **Privacy policy:** https://webtopdf.mulhamkassab.dev/privacy
-- **Languages:** English
+- **Languages:** English and Arabic (Arabic text is in `store/listing.txt`)
 
-Suggested description:
+Description (English, as published):
 
-> webTopdf by Mulham Kassab — https://mulhamkassab.dev/
+> Save the webpage you’re viewing as a PDF, directly from Chrome.
 >
-> Keep the recipe, research, menu, or page you want to revisit. webTopdf turns the page open in your browser into a PDF on your device.
+> Capture the full page or just the current view, choose your paper settings, and download the PDF to your device.
 >
-> Visual PDF captures the full loaded webpage or current view, stitches scrolling views, and downloads a paginated PDF. Choose A4 or Letter, portrait or landscape, margins, image quality, and a source/date footer. Hide selected elements, undo changes, and save a preferred export preset. Alt+Shift+P provides quick save with the last settings when that shortcut is available.
+> - Full-page and current-view capture
+> - A4 or Letter paper, portrait or landscape
+> - Adjustable margins and image quality
+> - Hide unwanted elements before exporting
+> - Optional source, date, and page-number footer
+> - Saved settings and Alt+Shift+P quick export
 >
-> Print PDF opens Chrome's print preview for a text-friendly PDF using the source website's print layout. Select Save as PDF in that dialog. Visual captures preserve appearance as images; their captured text is not selectable.
+> PDF processing happens locally. No account, subscription, analytics, or page uploads.
 >
-> Export happens locally. webTopdf has no account, page-upload endpoint, remote scripts, advertising, or analytics. It requests temporary access to the page only when you invoke it.
+> Visual PDFs preserve the page’s appearance as images. For selectable text, use Searchable print, which opens Chrome’s print preview.
 >
-> Chrome blocks extension access on browser-internal and other protected pages. Keep the captured tab active until saving finishes. Very long, infinite-scrolling, virtualized, or internally scrolling pages may need current-view capture or Print PDF. webTopdf restores page styles and scroll position after capture, cancellation, or a recoverable failure.
+> Chrome’s internal and protected pages cannot be captured. Very long or changing pages may work better with current-view capture.
+>
+> Created by Mulham Kassab · https://mulhamkassab.dev/
 
 ## Single purpose and permissions
 
@@ -60,7 +67,7 @@ Complete the current dashboard's data-use declarations accurately for local proc
 - Website installation instructions, extension download, and desktop/mobile layouts are checked.
 - Include store-sized product screenshots and the supplied 128px icon. The actual popup capture is in `.artifacts/browser-smoke/popup.png`; website screenshots are in `.artifacts/qa/`.
 
-The publisher must complete any required account registration, agreements, payment, and store review. A ZIP hosted on Vercel is an unpacked beta distribution, not a Chrome Web Store installation.
+The publisher uploads each package and handles store review. A ZIP hosted on Vercel is an unpacked developer build, not a Chrome Web Store installation; the website offers it only in a small "For developers" section.
 
 ## Ready-to-upload graphics
 

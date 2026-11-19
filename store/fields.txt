@@ -21,7 +21,7 @@ HOMEPAGE URL
 https://mulhamkassab.dev/
 
 SUPPORT URL
-https://github.com/MulhamKassab/pagepress/issues
+https://webtopdf.mulhamkassab.dev/install
 
 MATURE CONTENT
 Leave unchecked. webTopdf is a general-purpose webpage-to-PDF utility.

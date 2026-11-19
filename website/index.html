@@ -2,14 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Get webTopdf from the Chrome Web Store and save webpages as PDFs on your device.">
+  <meta name="description" content="Get webTopdf from the Chrome Web Store and save webpages as PDFs on your device. No account, no page uploads.">
   <meta name="theme-color" content="#f6f3eb">
   <title>webTopdf — Save webpages as PDF</title>
+  <link rel="canonical" href="https://webtopdf.mulhamkassab.dev/">
+  <meta property="og:type" content="website"><meta property="og:site_name" content="webTopdf"><meta property="og:title" content="webTopdf — Save webpages as PDF"><meta property="og:description" content="Get webTopdf from the Chrome Web Store and save webpages as PDFs on your device. No account, no page uploads."><meta property="og:url" content="https://webtopdf.mulhamkassab.dev/"><meta property="og:image" content="https://webtopdf.mulhamkassab.dev/brand/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="webTopdf: save webpages as PDF on your device">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="webTopdf — Save webpages as PDF"><meta name="twitter:description" content="Get webTopdf from the Chrome Web Store and save webpages as PDFs on your device. No account, no page uploads."><meta name="twitter:image" content="https://webtopdf.mulhamkassab.dev/brand/og.png">
   <link rel="icon" type="image/svg+xml" href="/brand/logo.svg"><link rel="stylesheet" href="/styles.css">
   <script src="/app.js" defer></script>
 </head>
 <body>
-<header class="site-header"><a class="wordmark" href="/" aria-label="webTopdf home"><img src="/brand/logo.svg" alt="" width="32" height="32">webTopdf<span>.</span></a><a class="quiet-link" href="/privacy">Privacy</a></header>
+<header class="site-header"><a class="wordmark" href="/" aria-label="webTopdf home"><img src="/brand/logo.svg" alt="" width="32" height="32">webTopdf<span>.</span></a><nav class="header-nav" aria-label="Main navigation"><a class="quiet-link" href="/install">Help &amp; FAQ</a><a class="quiet-link" href="/privacy">Privacy</a></nav></header>
 <main class="download-layout">
   <section class="download-intro" aria-labelledby="page-title">
     <p class="eyebrow"><span aria-hidden="true"></span> WEB TO PDF · CHROME EXTENSION</p>
@@ -17,6 +20,7 @@
     <p class="intro-text">Install webTopdf once. Then open a webpage and save it as a PDF, right from Chrome.</p>
     <a class="download-button" data-testid="chrome-store-link" href="https://chromewebstore.google.com/detail/webtopdf/mjaclamnjdmipobljileifmgkppiaeeb" target="_blank" rel="noopener noreferrer">Add to Chrome <span aria-hidden="true">↗</span></a>
     <p class="download-meta">Available on the Chrome Web Store · Chrome 116 or newer</p>
+    <p class="mobile-note" data-testid="mobile-note" hidden>Desktop Chrome or Edge only. Extensions do not run on phones or tablets, so open this page on a computer. Tip: send yourself the link.</p>
     <p class="local-note"><span aria-hidden="true">✓</span> On your device. No account. No page uploads.</p>
     <p class="install-note">Install from the store, pin webTopdf, and save your first webpage.</p>
   </section>
@@ -27,9 +31,10 @@
       <li><div><h3>Pin webTopdf</h3><p>Open Chrome’s extensions menu beside the address bar and pin <strong>webTopdf</strong> for quick access.</p></div></li>
       <li><div><h3>Open a page and save</h3><p>Open a webpage, click webTopdf, choose your export settings, then <strong>Save as PDF</strong>.</p></div></li>
     </ol>
-    <p class="mode-note">Visual PDF keeps the page’s appearance as images. For selectable text, choose <strong>Searchable print</strong> in the extension.</p>
+    <p class="mode-note">Visual PDF keeps the page’s appearance as images. For selectable text, choose <strong>Searchable print</strong> in the extension. Questions? See the <a href="/install">Help &amp; FAQ</a>.</p>
     <details class="manual-install">
-      <summary>Prefer a manual installation?</summary>
+      <summary>For developers: manual ZIP</summary>
+      <p class="dev-note"><strong>Most people should install from the Chrome Web Store.</strong> A manual installation never updates itself and shows Chrome’s developer-mode warning, so it can fall behind the store version. This ZIP is for developers and testers. ZIP version: <span data-testid="zip-version">latest build</span>.</p>
       <ol class="install-steps">
         <li><div><h3>Download and extract</h3><p><a data-testid="download-extension" href="/downloads/webtopdf-extension.zip" download="webtopdf-extension.zip">Download the extension ZIP</a> and unzip it into a folder you can keep.</p></div></li>
         <li><div><h3>Load the unpacked extension</h3><p>Paste this into Chrome’s address bar:</p><div class="address-row"><code>chrome://extensions</code><button type="button" data-testid="copy-extensions" aria-label="Copy Chrome extensions address" hidden>Copy</button></div><p class="copy-status" data-testid="copy-status" role="status" aria-live="polite"></p><p>Turn on <strong>Developer mode</strong>, click <strong>Load unpacked</strong>, and choose the extracted folder containing <code>manifest.json</code>.</p></div></li>
@@ -39,6 +44,6 @@
   </section>
 </main>
 <p class="page-note">Works on ordinary webpages. Chrome’s internal and protected pages cannot be captured.</p>
-<footer class="site-footer"><span>By <a href="https://mulhamkassab.dev" target="_blank" rel="noopener noreferrer">Mulham Kassab</a></span><nav aria-label="Footer navigation"><a href="/install">Installation</a><a href="/privacy">Privacy</a><a href="https://github.com/MulhamKassab/pagepress" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav></footer>
+<footer class="site-footer"><span>By <a href="https://mulhamkassab.dev" target="_blank" rel="noopener noreferrer">Mulham Kassab</a></span><nav aria-label="Footer navigation"><a href="/install">Help &amp; FAQ</a><a href="/privacy">Privacy</a><a href="https://github.com/MulhamKassab/pagepress" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav></footer>
 </body>
 </html>

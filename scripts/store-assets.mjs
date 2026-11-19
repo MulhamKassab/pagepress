@@ -1,15 +1,13 @@
-import { mkdir, readFile, writeFile, copyFile, access } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, copyFile } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
-import { homedir } from 'node:os';
-import { pathToFileURL } from 'node:url';
-const { chromium } = await import('playwright').catch(() => import(pathToFileURL(join(homedir(), '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs')).href));
+// Set PAGEPRESS_CHROMIUM_PATH to use a specific Chrome/Edge; otherwise Playwright's own Chromium is used.
+const { chromium } = await import('playwright');
 const root = resolve('.');
 const output = join(root, 'store');
 const qa = join(root, '.artifacts/store-assets');
 await mkdir(output, { recursive: true });
 await mkdir(qa, { recursive: true });
-const runtime = join(root, '.artifacts/browser-smoke/official-runtime/chromium-1234/chrome-win64/chrome.exe');
-const executablePath = process.env.PAGEPRESS_CHROMIUM_PATH || (await access(runtime).then(() => runtime).catch(() => chromium.executablePath()));
+const executablePath = process.env.PAGEPRESS_CHROMIUM_PATH || undefined;
 const extensionPath = join(root, 'extension');
 const context = await chromium.launchPersistentContext(join(qa, `profile-${Date.now()}`), {
   executablePath, headless: true, viewport: { width: 1280, height: 800 },

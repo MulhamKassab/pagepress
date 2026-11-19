@@ -22,5 +22,197 @@
   },
   "pageOther": {
     "message": "webTopdf works on normal webpages (http or https). Open one first."
+  },
+  "brandSub": {
+    "message": "by Mulham Kassab"
+  },
+  "localTag": {
+    "message": "LOCAL"
+  },
+  "readyToSave": {
+    "message": "READY TO SAVE"
+  },
+  "currentPageTitle": {
+    "message": "Current webpage"
+  },
+  "yourCurrentPage": {
+    "message": "Your current page"
+  },
+  "openWebpageToBegin": {
+    "message": "Open a webpage to begin."
+  },
+  "localFile": {
+    "message": "Local file"
+  },
+  "exportMode": {
+    "message": "Export mode"
+  },
+  "visualPdf": {
+    "message": "Visual PDF"
+  },
+  "searchablePrint": {
+    "message": "Searchable print"
+  },
+  "modeVisualDesc": {
+    "message": "The page as you see it, captured into a PDF. Keep this tab active during capture."
+  },
+  "modePrintDesc": {
+    "message": "Use Chrome’s print layout for selectable text. Choose Save as PDF in the print dialog; results depend on the site."
+  },
+  "captureArea": {
+    "message": "Capture area"
+  },
+  "fullPage": {
+    "message": "Full page"
+  },
+  "currentView": {
+    "message": "Current view"
+  },
+  "paper": {
+    "message": "Paper"
+  },
+  "paperLetter": {
+    "message": "US Letter"
+  },
+  "orientation": {
+    "message": "Orientation"
+  },
+  "portrait": {
+    "message": "Portrait"
+  },
+  "landscape": {
+    "message": "Landscape"
+  },
+  "margins": {
+    "message": "Margins"
+  },
+  "marginNone": {
+    "message": "None"
+  },
+  "marginSmall": {
+    "message": "Small · 8 mm"
+  },
+  "marginStandard": {
+    "message": "Standard · 12 mm"
+  },
+  "marginGenerous": {
+    "message": "Generous · 18 mm"
+  },
+  "imageQuality": {
+    "message": "Image quality"
+  },
+  "qualityCompact": {
+    "message": "Compact"
+  },
+  "qualityBalanced": {
+    "message": "Balanced"
+  },
+  "qualityHigh": {
+    "message": "High"
+  },
+  "finishingTouches": {
+    "message": "Finishing touches"
+  },
+  "toggleSticky": {
+    "message": "Avoid repeated sticky headers"
+  },
+  "toggleImages": {
+    "message": "Preload images with a short scroll"
+  },
+  "toggleFooter": {
+    "message": "Add source, date & page numbers"
+  },
+  "togglePrint": {
+    "message": "Unclip content & simplify navigation"
+  },
+  "exportPreset": {
+    "message": "Export preset"
+  },
+  "presetEveryday": {
+    "message": "Everyday"
+  },
+  "presetWide": {
+    "message": "Wide layouts"
+  },
+  "presetCompact": {
+    "message": "Small files"
+  },
+  "presetMine": {
+    "message": "My saved preset"
+  },
+  "savePreset": {
+    "message": "Save preset"
+  },
+  "presetSaved": {
+    "message": "Saved ✓"
+  },
+  "makeRoom": {
+    "message": "MAKE ROOM FOR THE CONTENT"
+  },
+  "hideDistractions": {
+    "message": "Hide distractions before saving."
+  },
+  "pickAndHide": {
+    "message": "Pick & hide"
+  },
+  "pickAndHideTitle": {
+    "message": "Click elements on the webpage to hide them. Press Escape to stop."
+  },
+  "undo": {
+    "message": "Undo"
+  },
+  "undoTitle": {
+    "message": "Restore the last hidden element"
+  },
+  "reset": {
+    "message": "Reset"
+  },
+  "resetTitle": {
+    "message": "Restore all hidden elements"
+  },
+  "selectionOne": {
+    "message": "1 element hidden. Restored after export."
+  },
+  "selectionMany": {
+    "message": "$1 elements hidden. Restored after export."
+  },
+  "cancel": {
+    "message": "Cancel"
+  },
+  "showInDownloads": {
+    "message": "Show in Downloads ↗"
+  },
+  "exportProgress": {
+    "message": "Export progress"
+  },
+  "saveAsPdf": {
+    "message": "Save as PDF"
+  },
+  "openPrintDialog": {
+    "message": "Open print dialog"
+  },
+  "savingYourPage": {
+    "message": "Saving your page…"
+  },
+  "startingExport": {
+    "message": "Starting the export…"
+  },
+  "shortcutNext": {
+    "message": "Next time: $1 to save with these settings."
+  },
+  "shortcutSet": {
+    "message": "Set a quick-save shortcut at chrome://extensions/shortcuts."
+  },
+  "noResponse": {
+    "message": "webTopdf did not respond. Please try again."
+  },
+  "helpLink": {
+    "message": "Help ↗"
+  },
+  "reportProblem": {
+    "message": "Report a problem ↗"
+  },
+  "helpPrivate": {
+    "message": "Private questions? Use the developer email on the webTopdf Chrome Web Store listing."
   }
 }

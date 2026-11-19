@@ -19,5 +19,197 @@
   },
   "pageOther": {
     "message": "يعمل webTopdf على صفحات الويب العادية (http أو https). افتح صفحة منها أولاً."
+  },
+  "brandSub": {
+    "message": "من ملهم كساب"
+  },
+  "localTag": {
+    "message": "محلي"
+  },
+  "readyToSave": {
+    "message": "جاهزة للحفظ"
+  },
+  "currentPageTitle": {
+    "message": "صفحة الويب الحالية"
+  },
+  "yourCurrentPage": {
+    "message": "صفحتك الحالية"
+  },
+  "openWebpageToBegin": {
+    "message": "افتح صفحة ويب للبدء."
+  },
+  "localFile": {
+    "message": "ملف محلي"
+  },
+  "exportMode": {
+    "message": "وضع التصدير"
+  },
+  "visualPdf": {
+    "message": "PDF مرئي"
+  },
+  "searchablePrint": {
+    "message": "طباعة قابلة للبحث"
+  },
+  "modeVisualDesc": {
+    "message": "الصفحة كما تراها، تُلتقط في ملف PDF. أبقِ هذا التبويب نشطًا أثناء الالتقاط."
+  },
+  "modePrintDesc": {
+    "message": "استخدم تخطيط الطباعة في Chrome للحصول على نص قابل للتحديد. اختر «حفظ بتنسيق PDF» في نافذة الطباعة؛ وتعتمد النتائج على الموقع."
+  },
+  "captureArea": {
+    "message": "منطقة الالتقاط"
+  },
+  "fullPage": {
+    "message": "الصفحة كاملة"
+  },
+  "currentView": {
+    "message": "العرض الحالي"
+  },
+  "paper": {
+    "message": "الورق"
+  },
+  "paperLetter": {
+    "message": "US Letter"
+  },
+  "orientation": {
+    "message": "الاتجاه"
+  },
+  "portrait": {
+    "message": "عمودي"
+  },
+  "landscape": {
+    "message": "أفقي"
+  },
+  "margins": {
+    "message": "الهوامش"
+  },
+  "marginNone": {
+    "message": "بلا"
+  },
+  "marginSmall": {
+    "message": "صغيرة · 8 مم"
+  },
+  "marginStandard": {
+    "message": "عادية · 12 مم"
+  },
+  "marginGenerous": {
+    "message": "واسعة · 18 مم"
+  },
+  "imageQuality": {
+    "message": "جودة الصور"
+  },
+  "qualityCompact": {
+    "message": "مضغوطة"
+  },
+  "qualityBalanced": {
+    "message": "متوازنة"
+  },
+  "qualityHigh": {
+    "message": "عالية"
+  },
+  "finishingTouches": {
+    "message": "لمسات أخيرة"
+  },
+  "toggleSticky": {
+    "message": "تجنّب تكرار الرؤوس الثابتة"
+  },
+  "toggleImages": {
+    "message": "حمّل الصور مسبقًا بتمرير قصير"
+  },
+  "toggleFooter": {
+    "message": "أضف المصدر والتاريخ وأرقام الصفحات"
+  },
+  "togglePrint": {
+    "message": "أظهر المحتوى المقصوص وبسّط التنقل"
+  },
+  "exportPreset": {
+    "message": "إعداد التصدير المسبق"
+  },
+  "presetEveryday": {
+    "message": "للاستخدام اليومي"
+  },
+  "presetWide": {
+    "message": "التخطيطات العريضة"
+  },
+  "presetCompact": {
+    "message": "ملفات صغيرة"
+  },
+  "presetMine": {
+    "message": "إعدادي المحفوظ"
+  },
+  "savePreset": {
+    "message": "حفظ الإعداد"
+  },
+  "presetSaved": {
+    "message": "تم الحفظ ✓"
+  },
+  "makeRoom": {
+    "message": "أفسح المجال للمحتوى"
+  },
+  "hideDistractions": {
+    "message": "أخفِ العناصر المشتتة قبل الحفظ."
+  },
+  "pickAndHide": {
+    "message": "اختيار وإخفاء"
+  },
+  "pickAndHideTitle": {
+    "message": "انقر على العناصر في صفحة الويب لإخفائها. اضغط Esc للتوقف."
+  },
+  "undo": {
+    "message": "تراجع"
+  },
+  "undoTitle": {
+    "message": "استعادة آخر عنصر مخفي"
+  },
+  "reset": {
+    "message": "إعادة تعيين"
+  },
+  "resetTitle": {
+    "message": "استعادة كل العناصر المخفية"
+  },
+  "selectionOne": {
+    "message": "تم إخفاء عنصر واحد. تتم استعادته بعد التصدير."
+  },
+  "selectionMany": {
+    "message": "تم إخفاء $1 عنصر. تتم استعادتها بعد التصدير."
+  },
+  "cancel": {
+    "message": "إلغاء"
+  },
+  "showInDownloads": {
+    "message": "عرض في التنزيلات ↗"
+  },
+  "exportProgress": {
+    "message": "تقدّم التصدير"
+  },
+  "saveAsPdf": {
+    "message": "حفظ كملف PDF"
+  },
+  "openPrintDialog": {
+    "message": "فتح نافذة الطباعة"
+  },
+  "savingYourPage": {
+    "message": "جارٍ حفظ صفحتك…"
+  },
+  "startingExport": {
+    "message": "جارٍ بدء التصدير…"
+  },
+  "shortcutNext": {
+    "message": "في المرة القادمة: $1 للحفظ بهذه الإعدادات."
+  },
+  "shortcutSet": {
+    "message": "عيّن اختصارًا للحفظ السريع في chrome://extensions/shortcuts."
+  },
+  "noResponse": {
+    "message": "لم يستجب webTopdf. يرجى المحاولة مرة أخرى."
+  },
+  "helpLink": {
+    "message": "المساعدة ↗"
+  },
+  "reportProblem": {
+    "message": "الإبلاغ عن مشكلة ↗"
+  },
+  "helpPrivate": {
+    "message": "لديك سؤال خاص؟ استخدم البريد الإلكتروني للمطوّر في صفحة webTopdf على متجر Chrome الإلكتروني."
   }
 }

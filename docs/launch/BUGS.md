@@ -10,6 +10,27 @@ Audited code: `codex/pagepress` = `main` = `74e12d7`. The extension folder match
 
 **Confidence**: Confirmed = reproduced; Likely = strong code evidence, not reproduced; Possible = plausible, needs a test.
 
+## Status after release 1.2.0 (19 Nov 2026)
+
+All 36 items were worked on in branch `launch/fixes` (merged into `main` and `codex/pagepress`).
+
+Checks:
+- 67 unit tests pass.
+- The i18n check passes (117 English and 117 Arabic strings).
+- ESLint is clean and `npm audit` reports 0 issues.
+- Both Edge smoke tests pass. The extension smoke test checks PDF pixels for the RTL, URL-change, inner-panel, fixed-header, lazy-image, PDF-tab and wide-page cases.
+
+| Result | IDs |
+| --- | --- |
+| Fixed in code and covered by a test or smoke fixture | WT-01, 02, 03, 04, 05, 06, 07, 08, 09, 12, 13, 17, 19, 20, 21, 26 (already correct; test added), 27, 28, 29, 30, 32, 33, 34, 35 |
+| Fixed in code, unit-tested only | WT-14 (popup in English and Arabic, RTL), WT-22 (wide-page note), WT-23 and 24 (cached fixed-element scan with a MutationObserver, open shadow roots), WT-25 |
+| Partly fixed | WT-10: content shifts and page growth are detected and reported; the 80-screen cap stays. WT-11: DPR cap, JPEG capture, and a size estimate that refuses oversized jobs; pages are still assembled whole in jsPDF. WT-18: CI workflow and ESLint added, but GitHub Actions is blocked by billing, so checks run locally. |
+| Repo side done; Mulham must act in a dashboard | WT-15 (privacy page rewritten; add your country of residence if you want it named), WT-16 (`store/listing.txt` synced and Arabic listing written; upload screenshots, set the publisher name, add the Arabic listing), WT-31 (docs updated; GitHub releases are still marked pre-release), WT-36 (popup and site point to the store-listing email and GitHub issues) |
+
+Not verified:
+- A real Chrome toolbar click with `activeTab`. The tests use Edge with a test-only host grant.
+- The Arabic wording, which needs a native review before it goes into the store listing.
+
 **Blockers: none found.** The extension works on ordinary pages, permissions are minimal, and the store already accepted it. The High items are the ones that make users leave 1-star reviews.
 
 | ID | Severity | Area | File:line | What goes wrong | How found | Confidence | Fix idea |

@@ -1,3 +1,6 @@
+Live listing: https://chromewebstore.google.com/detail/webtopdf/mjaclamnjdmipobljileifmgkppiaeeb
+The English text below matches the live store listing (checked 19 November 2026). Keep it in sync with the dashboard.
+
 NAME
 webTopdf
 
@@ -11,7 +14,7 @@ CATEGORY
 Productivity
 
 LANGUAGE
-English
+English (default), Arabic
 
 HOMEPAGE
 https://mulhamkassab.dev/
@@ -19,24 +22,64 @@ https://mulhamkassab.dev/
 PRODUCT WEBSITE
 https://webtopdf.mulhamkassab.dev/
 
-SUPPORT
-https://github.com/MulhamKassab/pagepress/issues
+SUPPORT URL
+https://webtopdf.mulhamkassab.dev/install
+
+SUPPORT CONTACT
+The developer contact email is set in the dashboard (Account tab) and shown on the listing. Do not write the address in this repository. GitHub issues (https://github.com/MulhamKassab/pagepress/issues) remain available for non-private reports.
 
 PRIVACY POLICY
 https://webtopdf.mulhamkassab.dev/privacy
 
 DESCRIPTION
-webTopdf by Mulham Kassab — https://mulhamkassab.dev/
+Save the webpage you’re viewing as a PDF, directly from Chrome.
 
-Save the webpage open in Chrome as a PDF on your device.
+Capture the full page or just the current view, choose your paper settings, and download the PDF to your device.
 
-Visual PDF captures the full loaded page or current view and downloads a paginated, image-based PDF. Choose A4 or Letter, portrait or landscape, margins, image quality, and an optional source/date footer. Hide selected page elements, undo changes, and save your preferred settings. Alt+Shift+P offers quick save with your last settings when that shortcut is available.
+- Full-page and current-view capture
+- A4 or Letter paper, portrait or landscape
+- Adjustable margins and image quality
+- Hide unwanted elements before exporting
+- Optional source, date, and page-number footer
+- Saved settings and Alt+Shift+P quick export
 
-Browser print opens Chrome's print preview. Choose Save as PDF to create a text-friendly PDF using the website's print layout. Visual captures preserve appearance as images and do not contain selectable text; print output depends on the website.
+PDF processing happens locally. No account, subscription, analytics, or page uploads.
 
-Processing happens locally. There is no account, page-upload endpoint, remote code, advertising, or analytics. Temporary access to the current tab is granted when you invoke the extension.
+Visual PDFs preserve the page’s appearance as images. For selectable text, use Searchable print, which opens Chrome’s print preview.
 
-Chrome restricts extension access to its internal and protected pages. Keep the captured tab active until saving finishes. Load the content you need before capture. Very long, infinite-scrolling, virtualized, embedded, or changing layouts may work better with current-view capture or browser print.
+Chrome’s internal and protected pages cannot be captured. Very long or changing pages may work better with current-view capture.
+
+Created by Mulham Kassab · https://mulhamkassab.dev/
 
 TEST INSTRUCTIONS
 No account, credentials, payment, or external backend is required. Open an ordinary webpage, click webTopdf, choose Current view and Save as PDF, and confirm that Chrome downloads a PDF. Choose Full page to test scrolling capture, or Searchable print to open the browser's print preview. Use Pick & hide to temporarily remove a chosen page element, then Undo or Reset to restore it. Captures, cancellation, and recoverable failures restore page state.
+
+
+ARABIC LISTING (language: Arabic, ar)
+The name stays "webTopdf" in every language. Add this in the dashboard under the Arabic localisation of the Store listing tab.
+
+NAME
+webTopdf
+
+SUMMARY
+احفظ صفحات الويب كملفات PDF على جهازك. التقاط الصفحة كاملة، والطباعة من المتصفح، وتنظيف الصفحة. من تطوير Mulham Kassab.
+
+DESCRIPTION
+احفظ صفحة الويب التي تتصفحها كملف PDF مباشرة من Chrome.
+
+التقط الصفحة كاملة أو العرض الحالي فقط، واختر إعدادات الورق، ثم نزّل ملف PDF على جهازك.
+
+- التقاط الصفحة كاملة أو العرض الحالي
+- ورق A4 أو Letter، عمودي أو أفقي
+- هوامش وجودة صورة قابلة للضبط
+- إخفاء العناصر غير المرغوبة قبل التصدير
+- تذييل اختياري يتضمن المصدر والتاريخ ورقم الصفحة
+- حفظ الإعدادات وتصدير سريع باختصار Alt+Shift+P
+
+تتم معالجة ملف PDF محليًا على جهازك. بلا حساب ولا اشتراك ولا تحليلات ولا رفع للصفحات.
+
+تحافظ ملفات PDF المرئية على مظهر الصفحة كصور. للحصول على نص قابل للتحديد، استخدم «الطباعة القابلة للبحث» التي تفتح معاينة الطباعة في Chrome.
+
+لا يمكن التقاط صفحات Chrome الداخلية والصفحات المحمية. وقد تعمل الصفحات الطويلة جدًا أو المتغيرة بشكل أفضل مع التقاط العرض الحالي.
+
+من تطوير Mulham Kassab · https://mulhamkassab.dev/

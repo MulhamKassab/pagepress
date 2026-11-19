@@ -4,6 +4,7 @@ node_modules/
 .cache/
 coverage/
 website/downloads/*.zip
+website/downloads/release.json
 website/vendor/
 extension/vendor/
 .env*

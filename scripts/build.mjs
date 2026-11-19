@@ -32,7 +32,6 @@ const archive = zipSync(entries, { level: 6 });
 await mkdir('website/downloads', { recursive: true });
 await mkdir('.artifacts', { recursive: true });
 await writeFile('website/downloads/webtopdf-extension.zip', archive);
-await writeFile('website/downloads/pagepress-extension.zip', archive); // Keep existing download links working.
 await writeFile(`.artifacts/webtopdf-extension-v${manifest.version}.zip`, archive);
 await writeFile('website/downloads/release.json', JSON.stringify({ version: manifest.version, minimumChromeVersion: manifest.minimum_chrome_version, archive: '/downloads/webtopdf-extension.zip', source: 'https://github.com/MulhamKassab/pagepress', bytes: archive.byteLength }, null, 2) + '\n');
 console.log(`webTopdf ${manifest.version}: packaged ${Object.keys(entries).length} extension files (${Math.round(archive.byteLength / 1024)} KB). Website ready in website/.`);

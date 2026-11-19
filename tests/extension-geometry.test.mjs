@@ -6,6 +6,16 @@ import {
   pdfLayout,
   tileSlices,
   safeFilename,
+  layoutShift,
+  layoutGrowth,
+  shiftedScrollY,
+  tileCrop,
+  toNativeScrollX,
+  toVisualScrollX,
+  observedShift,
+  estimatePdfBytes,
+  MAX_ESTIMATED_BYTES,
+  MIN_READABLE_SCALE,
 } from '../extension/lib/geometry.js';
 
 const defaults = {
@@ -220,4 +230,72 @@ test('export filenames are usable on Windows and have one PDF suffix', () => {
   }
   assert.ok(safeFilename('x'.repeat(500)).length <= 150);
   assert.ok(!safeFilename('Report.pdf').endsWith('.pdf.pdf'));
+});
+
+test('a page that shrinks (header leaves the flow) shifts later tiles and keeps every strip exactly once', () => {
+  const metrics = { width: 1000, height: 2480, viewportWidth: 1000, viewportHeight: 720 };
+  const tiles = planTiles(metrics, {});
+  assert.equal(layoutShift(2480, 2400), -80);
+  assert.equal(layoutShift(2480, 2479), 0, 'rounding noise is ignored');
+  assert.equal(layoutShift(2480, 2600), 0, 'growth is not a shift');
+  assert.equal(layoutGrowth(2480, 2600), 120);
+  assert.equal(layoutGrowth(2480, 2400), 0);
+  const covered = [];
+  for (const [index, tile] of tiles.entries()) {
+    const shift = index === 0 ? 0 : -80; // the header only leaves the flow once the page is scrolled
+    const moved = { x: tile.scrollX, y: Math.min(shiftedScrollY(tile, shift), 2400 - 720) };
+    const crop = tileCrop(tile, shift, moved, 1000, 720);
+    assert.equal(crop.ok, true, `tile at ${tile.y} stays reachable`);
+    // Planned page y -> document y in the shrunken layout.
+    covered.push([tile.y, tile.y + tile.height, moved.y + crop.cropY, moved.y + crop.cropY + tile.height]);
+  }
+  for (let i = 1; i < covered.length; i++) assert.equal(covered[i][0], covered[i - 1][1], 'no gap or overlap in the PDF');
+  assert.deepEqual(covered.map((c) => c[2] - c[0]), [0, -80, -80, -80], 'later tiles read content shifted by the header height');
+  assert.equal(covered.at(-1)[3], 2400, 'the last tile ends at the shrunken document end');
+});
+
+test('tile crop without a shift matches the clamped viewport and rejects unreachable scrolls', () => {
+  const tile = { x: 0, y: 2160, width: 1000, height: 320, scrollX: 0, scrollY: 1760 };
+  assert.deepEqual(tileCrop(tile, 0, { x: 0, y: 1760 }, 1000, 720), { cropX: 0, cropY: 400, ok: true });
+  assert.equal(tileCrop(tile, 0, { x: 0, y: 1000 }, 1000, 720).ok, false, 'page refused to scroll there');
+  assert.equal(shiftedScrollY({ scrollY: 30 }, -80), 0, 'never scrolls above the top');
+});
+
+test('right-to-left scroll positions map to a left-to-right plan and back', () => {
+  // 1800 wide document in a 1000 wide viewport: native range is -800..0.
+  assert.equal(toNativeScrollX(0, true, 800), -800, 'left edge of the page');
+  assert.equal(toNativeScrollX(800, true, 800), 0, 'right edge of the page');
+  assert.equal(toVisualScrollX(-800, true, 800), 0);
+  assert.equal(toVisualScrollX(0, true, 800), 800);
+  assert.equal(toNativeScrollX(230, false, 800), 230, 'left-to-right pages are untouched');
+  const tiles = planTiles({ width: 1800, height: 500, viewportWidth: 1000, viewportHeight: 500 }, {});
+  const natives = tiles.map((tile) => toNativeScrollX(tile.scrollX, true, 800));
+  assert.deepEqual(natives, [-800, 0], 'tile 0 is the left part, tile 1 the right part');
+  for (const tile of tiles) assert.equal(toVisualScrollX(toNativeScrollX(tile.scrollX, true, 800), true, 800), tile.scrollX);
+});
+
+test('the anchor element decides the shift when the page reports one, otherwise the page height does', () => {
+  assert.equal(observedShift(2480, { height: 2400, anchorShift: -80 }), -80);
+  assert.equal(observedShift(2480, { height: 2480, anchorShift: 150 }), 150, 'content inserted above shifts later tiles down');
+  assert.equal(observedShift(2480, { height: 2400, anchorShift: 1 }), 0, 'a height change elsewhere does not move the tiles');
+  assert.equal(observedShift(2480, { height: 2400, anchorShift: null }), -80, 'no anchor: fall back to the height');
+  assert.equal(observedShift(2480, { height: 2400 }), -80);
+});
+
+test('device pixel ratio is capped at 2 and a huge job is estimated before capturing', () => {
+  const metrics = { width: 1000, height: 3000, viewportWidth: 1000, viewportHeight: 800, devicePixelRatio: 3 };
+  const layout = pdfLayout(metrics, { quality: 'high' });
+  assert.equal(layout.canvasWidth, 2000, '1000 css px at 2x, not 3x');
+  const bytes = estimatePdfBytes(layout, { quality: 'high' });
+  assert.ok(bytes > 0 && bytes < MAX_ESTIMATED_BYTES, 'an ordinary page is far below the limit');
+  assert.ok(estimatePdfBytes(layout, { quality: 'compact' }) < estimatePdfBytes(layout, { quality: 'balanced' }));
+  const huge = pdfLayout({ width: 1200, height: 100000, viewportWidth: 1200, viewportHeight: 900, devicePixelRatio: 2 }, { quality: 'high' });
+  assert.ok(estimatePdfBytes(huge, { quality: 'high' }) > MAX_ESTIMATED_BYTES, 'a very long page at High quality is refused');
+});
+
+test('very wide pages are flagged as drawn small', () => {
+  const wide = pdfLayout({ width: 10000, height: 800, viewportWidth: 1000, viewportHeight: 800, devicePixelRatio: 1 }, {});
+  assert.ok(wide.pixelScale < MIN_READABLE_SCALE);
+  const normal = pdfLayout({ width: 1800, height: 800, viewportWidth: 1000, viewportHeight: 800, devicePixelRatio: 1 }, {});
+  assert.ok(normal.pixelScale >= MIN_READABLE_SCALE);
 });

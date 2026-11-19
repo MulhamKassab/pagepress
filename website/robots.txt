@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://webtopdf.mulhamkassab.dev/sitemap.xml
+

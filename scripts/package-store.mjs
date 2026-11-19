@@ -12,7 +12,7 @@ const entries = { [extensionName]: new Uint8Array(extension) };
 for (const name of ['listing.txt', 'fields.txt', 'submission-guide.md', 'privacy-and-permissions.txt', 'privacy-form.txt', 'screenshot-capture.png', 'promo-small.png', 'promo-marquee.png', 'icon128.png']) {
   entries[name] = new Uint8Array(await readFile(`store/${name}`));
 }
-entries['README.txt'] = new TextEncoder().encode(`webTopdf by Mulham Kassab\nhttps://mulhamkassab.dev/\n\nExtract this kit first. Upload ONLY ${extensionName} to the Chrome Web Store, not this outer kit. Add the included PNG graphics and use listing.txt and privacy-and-permissions.txt to fill the dashboard. Read submission-guide.md for the steps.\n\nStore submission and approval are still pending.\n`);
+entries['README.txt'] = new TextEncoder().encode(`webTopdf by Mulham Kassab\nhttps://mulhamkassab.dev/\n\nExtract this kit first. Upload ONLY ${extensionName} to the Chrome Web Store, not this outer kit. Add the included PNG graphics and use listing.txt and privacy-and-permissions.txt to fill the dashboard. Read submission-guide.md for the steps.\n\nwebTopdf is already live on the Chrome Web Store. This kit is for publishing updates: upload the extension ZIP as a new version of the existing item.\n`);
 await mkdir('.artifacts', { recursive: true });
 const output = `.artifacts/webtopdf-store-kit-v${manifest.version}.zip`;
 await writeFile(output, zipSync(entries, { level: 6 }));

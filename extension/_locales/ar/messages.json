@@ -1,0 +1,353 @@
+{
+  "extDescription": {
+    "message": "احفظ صفحات الويب كملف PDF على جهازك. التقاط الصفحة كاملة، والطباعة من المتصفح، وتنظيف الصفحة. من ملهم كساب."
+  },
+  "actionTitle": {
+    "message": "webTopdf — حفظ الصفحة كملف PDF"
+  },
+  "commandExport": {
+    "message": "حفظ الصفحة الحالية كملف PDF بآخر إعدادات استخدمتها"
+  },
+  "pagePdfMaybe": {
+    "message": "يبدو أن هذا ملف PDF. إذا كان المتصفح يعرضه في عارض PDF، فاستخدم زر التنزيل في العارض بدلاً من ذلك."
+  },
+  "pageInternal": {
+    "message": "لا يمكن حفظ صفحات المتصفح مثل الإعدادات والإضافات وعلامة التبويب الجديدة. افتح صفحة ويب عادية أولاً."
+  },
+  "pageStore": {
+    "message": "يمنع المتصفح الإضافات من العمل على صفحات متجره. افتح صفحة ويب أخرى أولاً."
+  },
+  "pageOther": {
+    "message": "يعمل webTopdf على صفحات الويب العادية (http أو https). افتح صفحة منها أولاً."
+  },
+  "brandSub": {
+    "message": "من ملهم كساب"
+  },
+  "localTag": {
+    "message": "محلي"
+  },
+  "readyToSave": {
+    "message": "جاهزة للحفظ"
+  },
+  "currentPageTitle": {
+    "message": "صفحة الويب الحالية"
+  },
+  "yourCurrentPage": {
+    "message": "صفحتك الحالية"
+  },
+  "openWebpageToBegin": {
+    "message": "افتح صفحة ويب للبدء."
+  },
+  "localFile": {
+    "message": "ملف محلي"
+  },
+  "exportMode": {
+    "message": "وضع التصدير"
+  },
+  "visualPdf": {
+    "message": "PDF مرئي"
+  },
+  "searchablePrint": {
+    "message": "طباعة قابلة للبحث"
+  },
+  "modeVisualDesc": {
+    "message": "الصفحة كما تراها، تُلتقط في ملف PDF. أبقِ هذا التبويب نشطًا أثناء الالتقاط."
+  },
+  "modePrintDesc": {
+    "message": "استخدم تخطيط الطباعة في Chrome للحصول على نص قابل للتحديد. اختر «حفظ بتنسيق PDF» في نافذة الطباعة؛ وتعتمد النتائج على الموقع."
+  },
+  "captureArea": {
+    "message": "منطقة الالتقاط"
+  },
+  "fullPage": {
+    "message": "الصفحة كاملة"
+  },
+  "currentView": {
+    "message": "العرض الحالي"
+  },
+  "paper": {
+    "message": "الورق"
+  },
+  "paperLetter": {
+    "message": "US Letter"
+  },
+  "orientation": {
+    "message": "الاتجاه"
+  },
+  "portrait": {
+    "message": "عمودي"
+  },
+  "landscape": {
+    "message": "أفقي"
+  },
+  "margins": {
+    "message": "الهوامش"
+  },
+  "marginNone": {
+    "message": "بلا"
+  },
+  "marginSmall": {
+    "message": "صغيرة · 8 مم"
+  },
+  "marginStandard": {
+    "message": "عادية · 12 مم"
+  },
+  "marginGenerous": {
+    "message": "واسعة · 18 مم"
+  },
+  "imageQuality": {
+    "message": "جودة الصور"
+  },
+  "qualityCompact": {
+    "message": "مضغوطة"
+  },
+  "qualityBalanced": {
+    "message": "متوازنة"
+  },
+  "qualityHigh": {
+    "message": "عالية"
+  },
+  "finishingTouches": {
+    "message": "لمسات أخيرة"
+  },
+  "toggleSticky": {
+    "message": "تجنّب تكرار الرؤوس الثابتة"
+  },
+  "toggleImages": {
+    "message": "حمّل الصور مسبقًا بتمرير قصير"
+  },
+  "toggleFooter": {
+    "message": "أضف المصدر والتاريخ وأرقام الصفحات"
+  },
+  "togglePrint": {
+    "message": "أظهر المحتوى المقصوص وبسّط التنقل"
+  },
+  "exportPreset": {
+    "message": "إعداد التصدير المسبق"
+  },
+  "presetEveryday": {
+    "message": "للاستخدام اليومي"
+  },
+  "presetWide": {
+    "message": "التخطيطات العريضة"
+  },
+  "presetCompact": {
+    "message": "ملفات صغيرة"
+  },
+  "presetMine": {
+    "message": "إعدادي المحفوظ"
+  },
+  "savePreset": {
+    "message": "حفظ الإعداد"
+  },
+  "presetSaved": {
+    "message": "تم الحفظ ✓"
+  },
+  "makeRoom": {
+    "message": "أفسح المجال للمحتوى"
+  },
+  "hideDistractions": {
+    "message": "أخفِ العناصر المشتتة قبل الحفظ."
+  },
+  "pickAndHide": {
+    "message": "اختيار وإخفاء"
+  },
+  "pickAndHideTitle": {
+    "message": "انقر على العناصر في صفحة الويب لإخفائها. اضغط Esc للتوقف."
+  },
+  "undo": {
+    "message": "تراجع"
+  },
+  "undoTitle": {
+    "message": "استعادة آخر عنصر مخفي"
+  },
+  "reset": {
+    "message": "إعادة تعيين"
+  },
+  "resetTitle": {
+    "message": "استعادة كل العناصر المخفية"
+  },
+  "selectionOne": {
+    "message": "تم إخفاء عنصر واحد. تتم استعادته بعد التصدير."
+  },
+  "selectionMany": {
+    "message": "تم إخفاء $1 عنصر. تتم استعادتها بعد التصدير."
+  },
+  "cancel": {
+    "message": "إلغاء"
+  },
+  "showInDownloads": {
+    "message": "عرض في التنزيلات ↗"
+  },
+  "exportProgress": {
+    "message": "تقدّم التصدير"
+  },
+  "saveAsPdf": {
+    "message": "حفظ كملف PDF"
+  },
+  "openPrintDialog": {
+    "message": "فتح نافذة الطباعة"
+  },
+  "savingYourPage": {
+    "message": "جارٍ حفظ صفحتك…"
+  },
+  "startingExport": {
+    "message": "جارٍ بدء التصدير…"
+  },
+  "shortcutNext": {
+    "message": "في المرة القادمة: $1 للحفظ بهذه الإعدادات."
+  },
+  "shortcutSet": {
+    "message": "عيّن اختصارًا للحفظ السريع في chrome://extensions/shortcuts."
+  },
+  "noResponse": {
+    "message": "لم يستجب webTopdf. يرجى المحاولة مرة أخرى."
+  },
+  "helpLink": {
+    "message": "المساعدة ↗"
+  },
+  "reportProblem": {
+    "message": "الإبلاغ عن مشكلة ↗"
+  },
+  "helpPrivate": {
+    "message": "لديك سؤال خاص؟ استخدم البريد الإلكتروني للمطوّر في صفحة webTopdf على متجر Chrome الإلكتروني."
+  },
+  "errorLayoutUnstable": {
+    "message": "تتغيّر تخطيطات هذه الصفحة باستمرار أثناء التمرير. جرّب وضع الطباعة أو العرض الحالي."
+  },
+  "doneScrollPanel": {
+    "message": "يتم التمرير في هذه الصفحة داخل لوحة، لذلك يعرض ملف PDF المحتوى الكامل لتلك اللوحة."
+  },
+  "doneGrew": {
+    "message": "زاد طول الصفحة أثناء الالتقاط، لذلك يتوقف ملف PDF عند الطول الذي كانت عليه عند بدء التصدير."
+  },
+  "errorScrollPanel": {
+    "message": "يتم التمرير في هذه الصفحة داخل لوحة لا يستطيع webTopdf التقاطها دفعة واحدة. استخدم العرض الحالي أو الطباعة بدلاً من ذلك."
+  },
+  "errorLostPage": {
+    "message": "فقد webTopdf الاتصال بالصفحة. أعد تحميل علامة التبويب وحاول مرة أخرى، أو استخدم وضع الطباعة."
+  },
+  "errorNoAccess": {
+    "message": "لم يسمح المتصفح لـ webTopdf باستخدام هذه الصفحة. انقر زر webTopdf على الصفحة مرة أخرى، أو أعد تحميلها، أو استخدم وضع الطباعة."
+  },
+  "errorQuota": {
+    "message": "يحدّ المتصفح من لقطات الشاشة حالياً. انتظر بضع ثوانٍ ثم صدّر مرة أخرى."
+  },
+  "errorTabGone": {
+    "message": "أُغلقت علامة التبويب أو النافذة أثناء التصدير. افتح الصفحة وصدّر مرة أخرى."
+  },
+  "statusCanceled": {
+    "message": "أُلغي التصدير."
+  },
+  "errorTabChanged": {
+    "message": "توقف التصدير لأنك انتقلت إلى علامة تبويب أو نافذة أخرى أو إلى صفحة أخرى. عُد إلى الصفحة وصدّر مرة أخرى."
+  },
+  "errorIsPdf": {
+    "message": "هذه الصفحة ملف PDF. استخدم زر التنزيل في عارض PDF لحفظها."
+  },
+  "errorFileAccess": {
+    "message": "فعّل «السماح بالوصول إلى عناوين URL للملفات» في تفاصيل إضافة webTopdf لتصدير الملفات المحلية."
+  },
+  "errorNoRun": {
+    "message": "لا يسمح Chrome لـ webTopdf بالعمل على هذه الصفحة. جرّب صفحة ويب عادية."
+  },
+  "errorNoResponse": {
+    "message": "لم تستجب الصفحة. أعد تحميلها وحاول مرة أخرى."
+  },
+  "errorPdfNoResponse": {
+    "message": "لم تستجب معالجة PDF. قد تكون الصفحة أكبر من أن تُعالج بهذه الجودة؛ جرّب الجودة المضغوطة أو العرض الحالي أو وضع الطباعة."
+  },
+  "statusPreparing": {
+    "message": "جارٍ تجهيز الصفحة…"
+  },
+  "errorTooLarge": {
+    "message": "هذه الصفحة أكبر من أن تتحول إلى PDF بهذه الجودة. اختر الجودة المضغوطة أو العرض الحالي أو وضع الطباعة."
+  },
+  "errorResized": {
+    "message": "تغيّر حجم نافذة المتصفح أثناء الالتقاط. أبقِ حجمها ثابتاً وحاول مرة أخرى."
+  },
+  "errorNoScroll": {
+    "message": "منعت هذه الصفحة التمرير إلى القسم التالي. جرّب وضع الطباعة أو العرض الحالي."
+  },
+  "errorScrolled": {
+    "message": "مُرِّرت الصفحة أثناء الالتقاط. أبقِ الصفحة ثابتة وصدّر مرة أخرى."
+  },
+  "statusCapturing": {
+    "message": "جارٍ التقاط العرض $1 من $2…"
+  },
+  "statusAssembling": {
+    "message": "جارٍ إنهاء ملف PDF…"
+  },
+  "statusSaving": {
+    "message": "جارٍ الحفظ في مجلد التنزيلات…"
+  },
+  "doneShifted": {
+    "message": "أُضيف محتوى فوق موضعك أثناء التقاط الصفحة. تحقّق من ملف PDF بحثاً عن أجزاء مكررة أو ناقصة."
+  },
+  "doneWide": {
+    "message": "هذه الصفحة عريضة جداً، لذلك تظهر صغيرة في ملف PDF. قد يكون الاتجاه الأفقي أو العرض الحالي أسهل للقراءة."
+  },
+  "doneOnePage": {
+    "message": "أُرسلت صفحة PDF واحدة إلى التنزيلات."
+  },
+  "doneManyPages": {
+    "message": "أُرسلت $1 من صفحات PDF إلى التنزيلات."
+  },
+  "errorDownload": {
+    "message": "تعذّر على Chrome إكمال التنزيل. صدّر مرة أخرى أو تحقّق من لوحة التنزيلات."
+  },
+  "errorGeneric": {
+    "message": "تعذّر تصدير هذه الصفحة."
+  },
+  "errorInterrupted": {
+    "message": "انقطع التصدير السابق. أُعيدت الصفحة إلى حالتها؛ يُرجى المحاولة مرة أخرى."
+  },
+  "errorBusy": {
+    "message": "هناك تصدير قيد التشغيل بالفعل."
+  },
+  "errorWait": {
+    "message": "انتظر حتى ينتهي التصدير الحالي."
+  },
+  "pickHint": {
+    "message": "اختيار وإخفاء: انقر عنصراً، أو اضغط Tab ومفاتيح الأسهم لتحريك الإطار، وEnter لإخفائه، وEscape للإيقاف."
+  },
+  "pickSelected": {
+    "message": "المحدد: $1"
+  },
+  "errorPrepCanceled": {
+    "message": "أُلغي تجهيز الالتقاط."
+  },
+  "errorSessionEnded": {
+    "message": "انتهت جلسة التقاط الصفحة. يُرجى التصدير مرة أخرى."
+  },
+  "errorNoArea": {
+    "message": "لا تحتوي هذه الصفحة على مساحة قابلة للالتقاط."
+  },
+  "errorViewportSmall": {
+    "message": "مساحة العرض في المتصفح أصغر من أن تُلتقط."
+  },
+  "errorTooLong": {
+    "message": "هذه الصفحة أطول من أن تُلتقط بأمان. اختر العرض الحالي، أو صدّر جزءاً أصغر."
+  },
+  "errorTooManyTiles": {
+    "message": "تحتاج هذه الصفحة إلى أكثر من $1 لقطة. اختر العرض الحالي، أو صغّر العرض، أو استخدم وضع الطباعة."
+  },
+  "errorCanvas": {
+    "message": "تعذّر على Chrome تخصيص لوحة رسم لصفحة PDF. جرّب الجودة المضغوطة."
+  },
+  "errorPageMissing": {
+    "message": "إحدى صفحات PDF الملتقطة مفقودة. يُرجى المحاولة مرة أخرى."
+  },
+  "errorPageOrder": {
+    "message": "وصلت صفحات PDF بترتيب خاطئ. يُرجى المحاولة مرة أخرى."
+  },
+  "errorPdfLibrary": {
+    "message": "مكتبة PDF المرفقة مفقودة. أعد تثبيت webTopdf من ملف ZIP الكامل."
+  },
+  "errorPdfSession": {
+    "message": "انتهت جلسة معالجة PDF. يُرجى التصدير مرة أخرى."
+  },
+  "errorPdfCommand": {
+    "message": "أمر غير معروف لمعالج PDF."
+  }
+}

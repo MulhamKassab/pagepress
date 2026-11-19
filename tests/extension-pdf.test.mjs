@@ -198,3 +198,47 @@ test('the offscreen processor ignores messages outside its extension and target'
   assert.equal(listener({ target: 'popup', type: 'BEGIN' }, { id: runtimeID }, respond), undefined);
   assert.equal(responded, false);
 });
+
+async function footerTexts(url) {
+  const texts = [], original = globalThis.jspdf;
+  globalThis.jspdf = { jsPDF: function (...args) { const pdf = new jsPDF(...args), text = pdf.text; pdf.text = (value, ...rest) => { texts.push(String(value)); return text.call(pdf, value, ...rest); }; return pdf; } };
+  try {
+    const layout = pdfLayout(metrics, options);
+    assert.equal((await send({ type: 'BEGIN', layout, options, meta: { ...meta, url } })).ok, true);
+    for (const tile of planTiles(metrics, options)) await capture(tile);
+    assert.equal((await send({ type: 'FINISH' })).ok, true);
+  } finally { globalThis.jspdf = original; }
+  return texts;
+}
+
+test('the footer keeps non-Latin and malformed paths readable instead of printing question marks', async () => {
+  const arabic = await footerTexts('https://ar.wikipedia.org/wiki/%D9%85%D8%B1%D8%AD%D8%A8%D8%A7');
+  assert.ok(arabic.some(text => text.startsWith('ar.wikipedia.org/wiki/%D9%85%D8%B1')), arabic.join(' | '));
+  assert.ok(!arabic.some(text => text.includes('???')));
+  const broken = await footerTexts('https://example.com/100%/done');
+  assert.ok(broken.some(text => text.startsWith('example.com/100%25/done') || text.startsWith('example.com/100%/done')), broken.join(' | '));
+  assert.ok(!broken.some(text => text.startsWith('Saved webpage')));
+});
+
+test('an Arabic page title is stored as UTF-16 text in the PDF information dictionary', async () => {
+  const layout = pdfLayout(metrics, options);
+  const title = 'مرحبا بالعالم';
+  assert.equal((await send({ type: 'BEGIN', layout, options, meta: { ...meta, title } })).ok, true);
+  for (const tile of planTiles(metrics, options)) await capture(tile);
+  const finished = await send({ type: 'FINISH' });
+  assert.equal(finished.ok, true, finished.error);
+  const bytes = Buffer.from(await createdURLs.get(finished.data.url).arrayBuffer()).toString('latin1');
+  const stored = /\/Title \(([^)]*)\)/.exec(bytes)[1];
+  assert.equal(stored.slice(0, 2), 'þÿ', 'UTF-16BE byte order mark');
+  const decoded = [...stored.slice(2).replace(/\\(.)/g, '$1')].map(character => character.charCodeAt(0));
+  const expected = [...title].flatMap(character => [character.charCodeAt(0) >> 8, character.charCodeAt(0) & 255]);
+  assert.deepEqual(decoded, expected);
+});
+
+test('offscreen failures carry a translation key and the English text', async () => {
+  await send({ type: 'ABORT' });
+  const result = await send({ type: 'FINISH' });
+  assert.equal(result.ok, false);
+  assert.equal(result.errorKey, 'errorPdfSession');
+  assert.match(result.error, /session ended/i);
+});

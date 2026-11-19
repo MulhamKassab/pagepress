@@ -1,27 +1,30 @@
 import { tileSlices } from './lib/geometry.js';
 
 let session = null;
+// Offscreen documents have no chrome.i18n. Errors carry a key and the English text; the
+// service worker translates them with t(errorKey, error).
+function fail(errorKey, english) { return Object.assign(new Error(english), { errorKey }); }
 const urls = new Set();
 function pageCanvas(index) {
   if (!session.canvases.has(index)) {
     const canvas = document.createElement('canvas');
     canvas.width = session.layout.canvasWidth; canvas.height = session.layout.canvasHeight;
     const context = canvas.getContext('2d', { alpha: false });
-    if (!context) throw new Error('Chrome could not allocate a PDF page canvas. Try Compact quality.');
+    if (!context) throw fail('errorCanvas', 'Chrome could not allocate a PDF page canvas. Try Compact quality.');
     context.fillStyle = '#ffffff'; context.fillRect(0, 0, canvas.width, canvas.height);
     session.canvases.set(index, canvas);
   }
   return session.canvases.get(index);
 }
 function sourceLabel(url) {
-  try { const parsed = new URL(url); return `${parsed.hostname || 'Local file'}${parsed.pathname === '/' ? '' : decodeURIComponent(parsed.pathname)}`; }
+  try { const parsed = new URL(url); return `${parsed.hostname || 'Local file'}${parsed.pathname === '/' ? '' : parsed.pathname}`; }
   catch { return 'Saved webpage'; }
 }
 function flush(index) {
   const { pdf, layout, options, meta, canvases } = session;
   const canvas = canvases.get(index);
-  if (!canvas) throw new Error('A captured PDF page is missing. Please try again.');
-  if (index !== session.flushed) throw new Error('PDF pages arrived out of order. Please try again.');
+  if (!canvas) throw fail('errorPageMissing', 'A captured PDF page is missing. Please try again.');
+  if (index !== session.flushed) throw fail('errorPageOrder', 'PDF pages arrived out of order. Please try again.');
   if (index > 0) pdf.addPage([layout.pageWidth, layout.pageHeight], options.orientation);
   const quality = { compact: 0.65, balanced: 0.86, high: 0.96 }[options.quality];
   pdf.addImage(canvas.toDataURL('image/jpeg', quality), 'JPEG', layout.margin, layout.margin, layout.contentWidth, layout.contentHeight, undefined, 'FAST');
@@ -40,14 +43,14 @@ function flush(index) {
 }
 async function handle(message) {
   if (message.type === 'BEGIN') {
-    if (!globalThis.jspdf?.jsPDF) throw new Error('The bundled PDF library is missing. Reinstall webTopdf from the complete ZIP.');
+    if (!globalThis.jspdf?.jsPDF) throw fail('errorPdfLibrary', 'The bundled PDF library is missing. Reinstall webTopdf from the complete ZIP.');
     session = { layout: message.layout, options: message.options, meta: message.meta, canvases: new Map(), flushed: 0, pdf: new globalThis.jspdf.jsPDF({ orientation: message.options.orientation, unit: 'mm', format: [message.layout.pageWidth, message.layout.pageHeight], compress: true }) };
     session.pdf.setProperties({ title: String(message.meta.title || 'Saved webpage'), author: '', creator: 'webTopdf — local webpage export', subject: 'Visual webpage capture' });
     return {};
   }
   if (message.type === 'RELEASE') { URL.revokeObjectURL(message.url); urls.delete(message.url); return {}; }
   if (message.type === 'ABORT') { if (session) for (const canvas of session.canvases.values()) { canvas.width = 1; canvas.height = 1; } session = null; return {}; }
-  if (!session) throw new Error('The PDF processing session ended. Please export again.');
+  if (!session) throw fail('errorPdfSession', 'The PDF processing session ended. Please export again.');
   if (message.type === 'TILE') {
     const blob = await (await fetch(message.image)).blob();
     const bitmap = await createImageBitmap(blob);
@@ -72,10 +75,10 @@ async function handle(message) {
     session = null;
     return { url, bytes };
   }
-  throw new Error('Unknown PDF processor command.');
+  throw fail('errorPdfCommand', 'Unknown PDF processor command.');
 }
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
   if (message.target !== 'offscreen' || sender.id !== chrome.runtime.id) return;
-  handle(message).then((data) => respond({ ok: true, data }), (error) => respond({ ok: false, error: error.message }));
+  handle(message).then((data) => respond({ ok: true, data }), (error) => respond({ ok: false, error: error.message, errorKey: error.errorKey }));
   return true;
 });

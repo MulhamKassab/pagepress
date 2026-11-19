@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
   "name": "webTopdf",
-  "version": "1.1.0",
-  "description": "Save webpages as a PDF on your device. Full-page capture, browser print and page cleanup. By Mulham Kassab.",
+  "version": "1.2.0",
+  "description": "__MSG_extDescription__",
+  "default_locale": "en",
   "minimum_chrome_version": "116",
   "permissions": [
     "activeTab",
@@ -20,11 +21,11 @@
       "suggested_key": {
         "default": "Alt+Shift+P"
       },
-      "description": "Save the current page as PDF using your last settings"
+      "description": "__MSG_commandExport__"
     }
   },
   "action": {
-    "default_title": "webTopdf — Save page as PDF",
+    "default_title": "__MSG_actionTitle__",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",

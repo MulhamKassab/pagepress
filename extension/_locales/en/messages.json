@@ -1,0 +1,356 @@
+{
+  "extDescription": {
+    "message": "Save webpages as a PDF on your device. Full-page capture, browser print and page cleanup. By Mulham Kassab.",
+    "description": "Manifest description (max 132 chars)."
+  },
+  "actionTitle": {
+    "message": "webTopdf — Save page as PDF",
+    "description": "Toolbar button tooltip."
+  },
+  "commandExport": {
+    "message": "Save the current page as PDF using your last settings",
+    "description": "Keyboard shortcut description."
+  },
+  "pagePdfMaybe": {
+    "message": "This looks like a PDF file. If Chrome is showing it in its PDF viewer, use the viewer’s download button instead."
+  },
+  "pageInternal": {
+    "message": "Browser pages like Settings, Extensions and New Tab can’t be saved. Open a normal webpage first."
+  },
+  "pageStore": {
+    "message": "The browser blocks extensions on its own web store pages. Open a different webpage first."
+  },
+  "pageOther": {
+    "message": "webTopdf works on normal webpages (http or https). Open one first."
+  },
+  "brandSub": {
+    "message": "by Mulham Kassab"
+  },
+  "localTag": {
+    "message": "LOCAL"
+  },
+  "readyToSave": {
+    "message": "READY TO SAVE"
+  },
+  "currentPageTitle": {
+    "message": "Current webpage"
+  },
+  "yourCurrentPage": {
+    "message": "Your current page"
+  },
+  "openWebpageToBegin": {
+    "message": "Open a webpage to begin."
+  },
+  "localFile": {
+    "message": "Local file"
+  },
+  "exportMode": {
+    "message": "Export mode"
+  },
+  "visualPdf": {
+    "message": "Visual PDF"
+  },
+  "searchablePrint": {
+    "message": "Searchable print"
+  },
+  "modeVisualDesc": {
+    "message": "The page as you see it, captured into a PDF. Keep this tab active during capture."
+  },
+  "modePrintDesc": {
+    "message": "Use Chrome’s print layout for selectable text. Choose Save as PDF in the print dialog; results depend on the site."
+  },
+  "captureArea": {
+    "message": "Capture area"
+  },
+  "fullPage": {
+    "message": "Full page"
+  },
+  "currentView": {
+    "message": "Current view"
+  },
+  "paper": {
+    "message": "Paper"
+  },
+  "paperLetter": {
+    "message": "US Letter"
+  },
+  "orientation": {
+    "message": "Orientation"
+  },
+  "portrait": {
+    "message": "Portrait"
+  },
+  "landscape": {
+    "message": "Landscape"
+  },
+  "margins": {
+    "message": "Margins"
+  },
+  "marginNone": {
+    "message": "None"
+  },
+  "marginSmall": {
+    "message": "Small · 8 mm"
+  },
+  "marginStandard": {
+    "message": "Standard · 12 mm"
+  },
+  "marginGenerous": {
+    "message": "Generous · 18 mm"
+  },
+  "imageQuality": {
+    "message": "Image quality"
+  },
+  "qualityCompact": {
+    "message": "Compact"
+  },
+  "qualityBalanced": {
+    "message": "Balanced"
+  },
+  "qualityHigh": {
+    "message": "High"
+  },
+  "finishingTouches": {
+    "message": "Finishing touches"
+  },
+  "toggleSticky": {
+    "message": "Avoid repeated sticky headers"
+  },
+  "toggleImages": {
+    "message": "Preload images with a short scroll"
+  },
+  "toggleFooter": {
+    "message": "Add source, date & page numbers"
+  },
+  "togglePrint": {
+    "message": "Unclip content & simplify navigation"
+  },
+  "exportPreset": {
+    "message": "Export preset"
+  },
+  "presetEveryday": {
+    "message": "Everyday"
+  },
+  "presetWide": {
+    "message": "Wide layouts"
+  },
+  "presetCompact": {
+    "message": "Small files"
+  },
+  "presetMine": {
+    "message": "My saved preset"
+  },
+  "savePreset": {
+    "message": "Save preset"
+  },
+  "presetSaved": {
+    "message": "Saved ✓"
+  },
+  "makeRoom": {
+    "message": "MAKE ROOM FOR THE CONTENT"
+  },
+  "hideDistractions": {
+    "message": "Hide distractions before saving."
+  },
+  "pickAndHide": {
+    "message": "Pick & hide"
+  },
+  "pickAndHideTitle": {
+    "message": "Click elements on the webpage to hide them. Press Escape to stop."
+  },
+  "undo": {
+    "message": "Undo"
+  },
+  "undoTitle": {
+    "message": "Restore the last hidden element"
+  },
+  "reset": {
+    "message": "Reset"
+  },
+  "resetTitle": {
+    "message": "Restore all hidden elements"
+  },
+  "selectionOne": {
+    "message": "1 element hidden. Restored after export."
+  },
+  "selectionMany": {
+    "message": "$1 elements hidden. Restored after export."
+  },
+  "cancel": {
+    "message": "Cancel"
+  },
+  "showInDownloads": {
+    "message": "Show in Downloads ↗"
+  },
+  "exportProgress": {
+    "message": "Export progress"
+  },
+  "saveAsPdf": {
+    "message": "Save as PDF"
+  },
+  "openPrintDialog": {
+    "message": "Open print dialog"
+  },
+  "savingYourPage": {
+    "message": "Saving your page…"
+  },
+  "startingExport": {
+    "message": "Starting the export…"
+  },
+  "shortcutNext": {
+    "message": "Next time: $1 to save with these settings."
+  },
+  "shortcutSet": {
+    "message": "Set a quick-save shortcut at chrome://extensions/shortcuts."
+  },
+  "noResponse": {
+    "message": "webTopdf did not respond. Please try again."
+  },
+  "helpLink": {
+    "message": "Help ↗"
+  },
+  "reportProblem": {
+    "message": "Report a problem ↗"
+  },
+  "helpPrivate": {
+    "message": "Private questions? Use the developer email on the webTopdf Chrome Web Store listing."
+  },
+  "errorLayoutUnstable": {
+    "message": "This page keeps changing its layout while it is scrolled. Try Print mode or Current view."
+  },
+  "doneScrollPanel": {
+    "message": "This page scrolls inside a panel, so the PDF shows that panel’s full content."
+  },
+  "doneGrew": {
+    "message": "The page grew while it was being captured, so the PDF stops at the length it had when the export started."
+  },
+  "errorScrollPanel": {
+    "message": "This page scrolls inside a panel that webTopdf can’t capture in one piece. Use Current view or Print instead."
+  },
+  "errorLostPage": {
+    "message": "webTopdf lost contact with the page. Reload the tab and try again, or use Print mode."
+  },
+  "errorNoAccess": {
+    "message": "The browser did not allow webTopdf to use this page. Click the webTopdf button on the page again, reload it, or use Print mode."
+  },
+  "errorQuota": {
+    "message": "The browser is limiting screenshots right now. Wait a few seconds and export again."
+  },
+  "errorTabGone": {
+    "message": "The tab or window was closed during the export. Open the page and export again."
+  },
+  "statusCanceled": {
+    "message": "Export canceled."
+  },
+  "errorTabChanged": {
+    "message": "Export stopped because you switched tabs, windows, or navigated. Return to the page and export again."
+  },
+  "errorIsPdf": {
+    "message": "This page is a PDF file. Use the PDF viewer’s download button to save it."
+  },
+  "errorFileAccess": {
+    "message": "Enable “Allow access to file URLs” in webTopdf extension details to export local files."
+  },
+  "errorNoRun": {
+    "message": "Chrome does not allow webTopdf to run on this page. Try a normal webpage."
+  },
+  "errorNoResponse": {
+    "message": "The page did not respond. Reload it and try again."
+  },
+  "errorPdfNoResponse": {
+    "message": "PDF processing did not respond. The page may be too large for this quality; try Compact quality, Current view or Print mode."
+  },
+  "statusPreparing": {
+    "message": "Preparing the page…"
+  },
+  "errorTooLarge": {
+    "message": "This page is too large to turn into a PDF at this quality. Choose Compact quality, Current view or Print mode."
+  },
+  "errorResized": {
+    "message": "The browser window changed size during capture. Keep its size steady and try again."
+  },
+  "errorNoScroll": {
+    "message": "This page prevented scrolling to the next section. Try Print mode or Current view."
+  },
+  "errorScrolled": {
+    "message": "The page was scrolled during capture. Keep the page still and export again."
+  },
+  "statusCapturing": {
+    "message": "Capturing $1 of $2 views…"
+  },
+  "statusAssembling": {
+    "message": "Finishing your PDF…"
+  },
+  "statusSaving": {
+    "message": "Saving to your Downloads folder…"
+  },
+  "doneShifted": {
+    "message": "Content was added above your position while the page was captured. Check the PDF for repeated or missing parts."
+  },
+  "doneWide": {
+    "message": "This page is very wide, so the PDF shows it small. Landscape orientation or Current view may read better."
+  },
+  "doneOnePage": {
+    "message": "1 PDF page sent to Downloads."
+  },
+  "doneManyPages": {
+    "message": "$1 PDF pages sent to Downloads."
+  },
+  "errorDownload": {
+    "message": "Chrome could not finish the download. Export again or check your Downloads panel."
+  },
+  "errorGeneric": {
+    "message": "Could not export this page."
+  },
+  "errorInterrupted": {
+    "message": "The previous export was interrupted. The page has been restored; please try again."
+  },
+  "errorBusy": {
+    "message": "An export is already running."
+  },
+  "errorWait": {
+    "message": "Wait for the current export to finish."
+  },
+  "pickHint": {
+    "message": "Pick & hide: click an element, or press Tab and the arrow keys to move the outline, Enter to hide it, Escape to stop."
+  },
+  "pickSelected": {
+    "message": "Selected: $1"
+  },
+  "errorPrepCanceled": {
+    "message": "Capture preparation was canceled."
+  },
+  "errorSessionEnded": {
+    "message": "The page capture session ended. Please export again."
+  },
+  "errorNoArea": {
+    "message": "This page has no usable capture area."
+  },
+  "errorViewportSmall": {
+    "message": "The browser viewport is too small to capture."
+  },
+  "errorTooLong": {
+    "message": "This page is too long to capture safely. Choose Current view, or export a smaller section."
+  },
+  "errorTooManyTiles": {
+    "message": "This page needs more than $1 captures. Choose Current view, zoom out, or use Print mode."
+  },
+  "errorCanvas": {
+    "message": "Chrome could not allocate a PDF page canvas. Try Compact quality."
+  },
+  "errorPageMissing": {
+    "message": "A captured PDF page is missing. Please try again."
+  },
+  "errorPageOrder": {
+    "message": "PDF pages arrived out of order. Please try again."
+  },
+  "errorPdfLibrary": {
+    "message": "The bundled PDF library is missing. Reinstall webTopdf from the complete ZIP."
+  },
+  "errorPdfSession": {
+    "message": "The PDF processing session ended. Please export again."
+  },
+  "errorPdfCommand": {
+    "message": "Unknown PDF processor command."
+  }
+}

@@ -1,4 +1,5 @@
-import { normalizeOptions, planTiles, pdfLayout, safeFilename } from './lib/geometry.js';
+import { normalizeOptions, planTiles, pdfLayout, safeFilename, layoutShift, layoutGrowth, shiftedScrollY, tileCrop } from './lib/geometry.js';
+import { t } from './lib/i18n.js';
 
 let job = null, starting = false, creatingOffscreen = null, downloadUpdates = Promise.resolve();
 // Chrome's capture quota applies to the extension, including consecutive exports.
@@ -22,10 +23,21 @@ async function activeTab() {
   if (!tab?.id || !/^https?:\/\//i.test(tab.url || '') && !/^file:\/\//i.test(tab.url || '')) throw new Error('Open a normal webpage first. Chrome pages, the Web Store, and the built-in PDF viewer cannot be exported.');
   return tab;
 }
+// Pages change the hash or call history.pushState/replaceState while you scroll; that is
+// the same document. Only a real navigation (tabs.onUpdated status "loading") or a move
+// to another site ends the export.
+const siteOf = (url) => { try { const parsed = new URL(url); return `${parsed.protocol}//${parsed.host}`; } catch { return String(url || ''); } };
 async function ensureActive(currentJob) {
   if (currentJob.cancelled) throw new Error('Export canceled.');
   const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-  if (tab?.id !== currentJob.tab.id || tab?.windowId !== currentJob.tab.windowId || (tab.url && tab.url !== currentJob.tab.url)) throw new Error('Export stopped because you switched tabs, windows, or navigated. Return to the page and export again.');
+  if (currentJob.loading) {
+    // The tab reported "loading". Same-document changes (hash, pushState) may do that too, so
+    // ask our script in the page: a real navigation or reload destroyed it and its capture session.
+    const alive = await content(currentJob.tab.id, 'ALIVE').then((state) => state.capturing, () => false);
+    if (!alive) currentJob.navigated = true;
+    currentJob.loading = false;
+  }
+  if (currentJob.navigated || tab?.id !== currentJob.tab.id || tab?.windowId !== currentJob.tab.windowId || (tab.url && siteOf(tab.url) !== siteOf(currentJob.tab.url))) throw new Error('Export stopped because you switched tabs, windows, or navigated. Return to the page and export again.');
 }
 async function inject(tabId) {
   try { await chrome.scripting.executeScript({ target: { tabId }, files: ['content.js'] }); }
@@ -78,14 +90,29 @@ async function exportPage(currentJob) {
     const tiles = planTiles(metrics, options), layout = pdfLayout(metrics, options);
     await ensureOffscreen();
     await offscreen('BEGIN', { layout, options, meta: { title: metrics.title || tab.title, url: metrics.url || tab.url, date: new Date().toISOString() } });
+    // The page can change height while it is scrolled (a header turning fixed). `shift`
+    // is how far the content moved up compared with the plan; later tiles are retargeted.
+    let shift = 0, grewBy = 0;
     for (let index = 0; index < tiles.length; index++) {
       await ensureActive(currentJob);
       const tile = tiles[index];
-      const moved = await content(tab.id, 'MOVE', { x: tile.scrollX, y: tile.scrollY, scope: options.scope, hideSticky: options.hideSticky && index > 0 });
-      if (moved.viewportWidth !== metrics.viewportWidth || moved.viewportHeight !== metrics.viewportHeight) throw new Error('The browser window changed size during capture. Keep its size steady and try again.');
-      const cropX = options.scope === 'viewport' ? 0 : tile.x - moved.x;
-      const cropY = options.scope === 'viewport' ? 0 : tile.y - moved.y;
-      if (cropX < -1 || cropY < -1 || cropX + tile.width > metrics.viewportWidth + 1 || cropY + tile.height > metrics.viewportHeight + 1) throw new Error('This page prevented scrolling to the next section. Try Print mode or Current view.');
+      let moved;
+      for (let attempt = 0; ; attempt++) {
+        moved = await content(tab.id, 'MOVE', { x: tile.scrollX, y: shiftedScrollY(tile, shift), scope: options.scope, hideSticky: options.hideSticky && index > 0 });
+        if (moved.viewportWidth !== metrics.viewportWidth || moved.viewportHeight !== metrics.viewportHeight) throw new Error('The browser window changed size during capture. Keep its size steady and try again.');
+        if (options.scope === 'viewport') break;
+        grewBy = Math.max(grewBy, layoutGrowth(metrics.height, moved.height));
+        const observed = layoutShift(metrics.height, moved.height);
+        if (observed === shift) break;
+        shift = observed;
+        if (attempt >= 3) throw new Error(t('errorLayoutUnstable', 'This page keeps changing its layout while it is scrolled. Try Print mode or Current view.'));
+      }
+      const { cropX: tileCropX, cropY: tileCropY, ok } = tileCrop(tile, shift, moved, metrics.viewportWidth, metrics.viewportHeight);
+      const cropX = options.scope === 'viewport' ? 0 : tileCropX;
+      const cropY = options.scope === 'viewport' ? 0 : tileCropY;
+      if (options.scope !== 'viewport' && !ok) throw new Error('This page prevented scrolling to the next section. Try Print mode or Current view.');
+      // Where the capture area (page or inner panel) sits inside the screenshot.
+      const originX = moved.originX || 0, originY = moved.originY || 0;
       while (Date.now() - lastCaptureAt < CAPTURE_INTERVAL_MS) {
         await pause(CAPTURE_INTERVAL_MS - (Date.now() - lastCaptureAt));
       }
@@ -99,7 +126,7 @@ async function exportPage(currentJob) {
       const afterCapture = await content(tab.id, 'METRICS');
       if (afterCapture.scrollX !== moved.x || afterCapture.scrollY !== moved.y) throw new Error('The page was scrolled during capture. Keep the page still and export again.');
       if (afterCapture.innerWidth !== moved.innerWidth || afterCapture.innerHeight !== moved.innerHeight) throw new Error('The browser window changed size during capture. Keep its size steady and try again.');
-      await offscreen('TILE', { image, tile: { ...tile, cropX: Math.max(0, cropX), cropY: Math.max(0, cropY) }, innerWidth: moved.innerWidth, innerHeight: moved.innerHeight });
+      await offscreen('TILE', { image, tile: { ...tile, cropX: Math.max(0, cropX) + originX, cropY: Math.max(0, cropY) + originY }, innerWidth: moved.innerWidth, innerHeight: moved.innerHeight });
       await publish({ phase: 'capturing', progress: Math.round((index + 1) / tiles.length * 88), message: `Capturing ${index + 1} of ${tiles.length} views…`, totalTiles: tiles.length, capturedTiles: index + 1, pages: layout.totalPages });
     }
     await ensureActive(currentJob);
@@ -111,7 +138,10 @@ async function exportPage(currentJob) {
     const downloadId = await chrome.downloads.download({ url: blobUrl, filename: safeFilename(metrics.title || tab.title), saveAs: false, conflictAction: 'uniquify' });
     currentJob.downloadId = downloadId;
     await rememberDownload(downloadId, blobUrl);
-    await publish({ phase: 'done', progress: 100, message: `${layout.totalPages} PDF ${layout.totalPages === 1 ? 'page' : 'pages'} sent to Downloads.`, downloadId, filename: safeFilename(metrics.title || tab.title) });
+    const notes = [];
+    if (metrics.scroller) notes.push(t('doneScrollPanel', 'This page scrolls inside a panel, so the PDF shows that panel’s full content.'));
+    if (grewBy) notes.push(t('doneGrew', 'The page grew while it was being captured, so the PDF stops at the length it had when the export started.'));
+    await publish({ phase: 'done', progress: 100, message: [`${layout.totalPages} PDF ${layout.totalPages === 1 ? 'page' : 'pages'} sent to Downloads.`, ...notes].join(' '), downloadId, filename: safeFilename(metrics.title || tab.title) });
     // Keep the Blob alive until Chrome has consumed it, even if the popup closes.
     let complete = false;
     for (let attempt = 0; attempt < 40; attempt++) {
@@ -193,6 +223,9 @@ chrome.commands.onCommand.addListener(async (command) => {
     void exportPage(job);
   } catch (error) { await publish({ phase: 'error', progress: 0, message: error.message }); }
   finally { starting = false; }
+});
+chrome.tabs.onUpdated?.addListener((tabId, changeInfo) => {
+  if (job && tabId === job.tab.id && changeInfo.status === 'loading') job.loading = true;
 });
 chrome.downloads.onChanged.addListener(async (delta) => {
   if (!['complete', 'interrupted'].includes(delta.state?.current)) return;

@@ -72,6 +72,48 @@ export function tileSlices(tile, layout) {
   return slices;
 }
 
+// --- Adaptive capture helpers (pure; used by background.js and unit-tested) ---
+
+// A page may change height while it is scrolled (a header turning position:fixed,
+// lazy content). Differences up to this many CSS pixels are rounding noise.
+export const LAYOUT_TOLERANCE = 2;
+
+// How far the content moved up, as a negative number of CSS pixels, when the
+// page got shorter than planned. 0 when it did not shrink.
+export function layoutShift(plannedHeight, currentHeight) {
+  const delta = Math.round(currentHeight) - Math.round(plannedHeight);
+  return delta < -LAYOUT_TOLERANCE ? delta : 0;
+}
+
+// How many CSS pixels the page grew beyond the plan. 0 when it did not grow.
+export function layoutGrowth(plannedHeight, currentHeight) {
+  const delta = Math.round(currentHeight) - Math.round(plannedHeight);
+  return delta > LAYOUT_TOLERANCE ? delta : 0;
+}
+
+// Where to scroll for a planned tile once the layout has shifted.
+export function shiftedScrollY(tile, shift) {
+  return Math.max(0, tile.scrollY + (shift || 0));
+}
+
+// Where, inside the visible area, a tile's pixels are. `moved` holds the real
+// scroll position (left-to-right x) after moving.
+export function tileCrop(tile, shift, moved, viewportWidth, viewportHeight) {
+  const cropX = tile.x - moved.x, cropY = tile.y + (shift || 0) - moved.y;
+  const ok = cropX >= -1 && cropY >= -1 && cropX + tile.width <= viewportWidth + 1 && cropY + tile.height <= viewportHeight + 1;
+  return { cropX, cropY, ok };
+}
+
+// Right-to-left documents scroll from 0 (right edge) to a negative maximum
+// (left edge). Plans use a left-to-right "visual" x where 0 is the left edge,
+// so the PDF's image order matches what the reader sees.
+export function toNativeScrollX(visualX, rtl, maxScroll) {
+  return rtl ? visualX - Math.max(0, maxScroll) : visualX;
+}
+export function toVisualScrollX(nativeX, rtl, maxScroll) {
+  return rtl ? nativeX + Math.max(0, maxScroll) : nativeX;
+}
+
 export function safeFilename(title = '') {
   let base = String(title).replace(/[<>:"/\\|?*\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().replace(/\.pdf$/i, '').replace(/[. ]+$/g, '').slice(0, 140).trim();
   if (!base) base = 'webTopdf export';

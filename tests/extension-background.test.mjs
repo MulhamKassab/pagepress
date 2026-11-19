@@ -46,6 +46,7 @@ async function harness(config = {}) {
     action: { async setBadgeBackgroundColor() {}, async setBadgeText() {} },
     scripting: { async executeScript() { state.events.push('inject'); } },
     tabs: {
+      onUpdated: { addListener(value) { state.onUpdated = value; } },
       async query() {
         state.queryCount += 1;
         if (config.queryGate) await config.queryGate.promise;
@@ -65,7 +66,13 @@ async function harness(config = {}) {
           state.scrollX = message.x;
           state.scrollY = message.y;
           if (config.switchDuringMove) state.activeTab = { ...page, id: 2 };
-          return { ok: true, data: { ...metrics, x: message.x, y: message.y } };
+          if (config.sameDocumentUrlChange) {
+            state.activeTab = { ...page, url: `${page.url}?s=${message.y}#section` };
+            state.onUpdated(page.id, config.sameDocumentUrlChange === 'loading' ? { url: state.activeTab.url, status: 'loading' } : { url: state.activeTab.url });
+          }
+          if (config.navigateDuringMove) state.onUpdated(page.id, { status: 'loading' });
+          const height = config.heightAfterMove ? config.heightAfterMove(message, state) : metrics.height;
+          return { ok: true, data: { ...metrics, height, x: message.x, y: message.y } };
         }
         if (message.type === 'METRICS') {
           return { ok: true, data: {
@@ -74,6 +81,7 @@ async function harness(config = {}) {
           } };
         }
         if (message.type === 'RESTORE') return { ok: true, data: {} };
+        if (message.type === 'ALIVE') return { ok: true, data: { capturing: !config.navigateDuringMove } };
         throw new Error(`Unexpected content command ${message.type}`);
       },
       async captureVisibleTab(windowId, captureOptions) {
@@ -248,4 +256,72 @@ test('rapid consecutive viewport exports share Chrome capture throttling across 
     const interval = state.captureTimestamps[index] - state.captureTimestamps[index - 1];
     assert.ok(interval >= 550, `Separate export jobs captured only ${interval} ms apart`);
   }
+});
+
+test('a header leaving the flow shortens the page: later tiles are retargeted instead of failing', async () => {
+  // Tile 0 sees 1000 px; once scrolled, an 80 px header leaves the flow and the page is 920 px.
+  const { state, send, settled } = await harness({ heightAfterMove: (message) => (message.y > 0 ? 920 : 1000) });
+  assert.equal((await send({ type: 'EXPORT', options: { hideSticky: true } })).ok, true);
+  await settled();
+  assert.equal(state.session.exportStatus.phase, 'done', state.session.exportStatus.message);
+  const moves = state.content.filter((message) => message.type === 'MOVE').map((message) => message.y);
+  assert.deepEqual(moves, [0, 400, 320], 'second tile first lands at 400, sees the shorter page, then re-targets to 320');
+  const tiles = state.offscreen.filter((message) => message.type === 'TILE').map((message) => message.tile);
+  assert.deepEqual(tiles.map((tile) => [tile.y, tile.cropY]), [[0, 0], [600, 200]]);
+  assert.equal(state.captures.length, 2);
+  assert.doesNotMatch(state.session.exportStatus.message, /grew/);
+});
+
+test('a page that grows while capturing keeps the planned length and says so', async () => {
+  const { state, send, settled } = await harness({ heightAfterMove: (message) => (message.y > 0 ? 1300 : 1000) });
+  assert.equal((await send({ type: 'EXPORT', options: {} })).ok, true);
+  await settled();
+  assert.equal(state.session.exportStatus.phase, 'done', state.session.exportStatus.message);
+  assert.match(state.session.exportStatus.message, /grew while it was being captured/);
+  assert.equal(state.offscreen.find((message) => message.type === 'BEGIN').layout.height, 1000);
+});
+
+test('a layout that never settles stops with a clear message', async () => {
+  let toggle = 0;
+  const { state, send, settled } = await harness({ heightAfterMove: (message) => (message.y > 0 ? (toggle++ % 2 ? 1000 : 900) : 1000) });
+  assert.equal((await send({ type: 'EXPORT', options: {} })).ok, true);
+  await settled();
+  assert.equal(state.session.exportStatus.phase, 'error');
+  assert.match(state.session.exportStatus.message, /keeps changing its layout/);
+});
+
+test('hash and history changes while scrolling do not stop the export', async () => {
+  const { state, send, settled } = await harness({ sameDocumentUrlChange: true });
+  assert.equal((await send({ type: 'EXPORT', options: {} })).ok, true);
+  await settled();
+  assert.equal(state.session.exportStatus.phase, 'done', state.session.exportStatus.message);
+  assert.equal(state.captures.length, 2);
+});
+
+test('a real navigation (the tab starts loading) stops the export before another screenshot', async () => {
+  const { state, send, settled } = await harness({ navigateDuringMove: true });
+  assert.equal((await send({ type: 'EXPORT', options: {} })).ok, true);
+  await settled();
+  assert.equal(state.session.exportStatus.phase, 'error');
+  assert.match(state.session.exportStatus.message, /switched tabs, windows, or navigated/);
+  assert.equal(state.captures.length, 0);
+});
+
+test('moving to another site stops the export even without a loading event', async () => {
+  const { state, send, settled } = await harness();
+  state.activeTab = { ...page };
+  const original = chrome.tabs.sendMessage;
+  chrome.tabs.sendMessage = async (tabId, message) => { if (message.type === 'MOVE') state.activeTab = { ...page, url: 'https://evil.example/' }; return original(tabId, message); };
+  assert.equal((await send({ type: 'EXPORT', options: {} })).ok, true);
+  await settled();
+  assert.equal(state.session.exportStatus.phase, 'error');
+  assert.equal(state.captures.length, 0);
+});
+
+test('a browser that reports "loading" for a hash change still exports while the page script is alive', async () => {
+  const { state, send, settled } = await harness({ sameDocumentUrlChange: 'loading' });
+  assert.equal((await send({ type: 'EXPORT', options: {} })).ok, true);
+  await settled();
+  assert.equal(state.session.exportStatus.phase, 'done', state.session.exportStatus.message);
+  assert.ok(state.content.some((message) => message.type === 'ALIVE'));
 });

@@ -6,6 +6,12 @@ import {
   pdfLayout,
   tileSlices,
   safeFilename,
+  layoutShift,
+  layoutGrowth,
+  shiftedScrollY,
+  tileCrop,
+  toNativeScrollX,
+  toVisualScrollX,
 } from '../extension/lib/geometry.js';
 
 const defaults = {
@@ -220,4 +226,46 @@ test('export filenames are usable on Windows and have one PDF suffix', () => {
   }
   assert.ok(safeFilename('x'.repeat(500)).length <= 150);
   assert.ok(!safeFilename('Report.pdf').endsWith('.pdf.pdf'));
+});
+
+test('a page that shrinks (header leaves the flow) shifts later tiles and keeps every strip exactly once', () => {
+  const metrics = { width: 1000, height: 2480, viewportWidth: 1000, viewportHeight: 720 };
+  const tiles = planTiles(metrics, {});
+  assert.equal(layoutShift(2480, 2400), -80);
+  assert.equal(layoutShift(2480, 2479), 0, 'rounding noise is ignored');
+  assert.equal(layoutShift(2480, 2600), 0, 'growth is not a shift');
+  assert.equal(layoutGrowth(2480, 2600), 120);
+  assert.equal(layoutGrowth(2480, 2400), 0);
+  const covered = [];
+  for (const [index, tile] of tiles.entries()) {
+    const shift = index === 0 ? 0 : -80; // the header only leaves the flow once the page is scrolled
+    const moved = { x: tile.scrollX, y: Math.min(shiftedScrollY(tile, shift), 2400 - 720) };
+    const crop = tileCrop(tile, shift, moved, 1000, 720);
+    assert.equal(crop.ok, true, `tile at ${tile.y} stays reachable`);
+    // Planned page y -> document y in the shrunken layout.
+    covered.push([tile.y, tile.y + tile.height, moved.y + crop.cropY, moved.y + crop.cropY + tile.height]);
+  }
+  for (let i = 1; i < covered.length; i++) assert.equal(covered[i][0], covered[i - 1][1], 'no gap or overlap in the PDF');
+  assert.deepEqual(covered.map((c) => c[2] - c[0]), [0, -80, -80, -80], 'later tiles read content shifted by the header height');
+  assert.equal(covered.at(-1)[3], 2400, 'the last tile ends at the shrunken document end');
+});
+
+test('tile crop without a shift matches the clamped viewport and rejects unreachable scrolls', () => {
+  const tile = { x: 0, y: 2160, width: 1000, height: 320, scrollX: 0, scrollY: 1760 };
+  assert.deepEqual(tileCrop(tile, 0, { x: 0, y: 1760 }, 1000, 720), { cropX: 0, cropY: 400, ok: true });
+  assert.equal(tileCrop(tile, 0, { x: 0, y: 1000 }, 1000, 720).ok, false, 'page refused to scroll there');
+  assert.equal(shiftedScrollY({ scrollY: 30 }, -80), 0, 'never scrolls above the top');
+});
+
+test('right-to-left scroll positions map to a left-to-right plan and back', () => {
+  // 1800 wide document in a 1000 wide viewport: native range is -800..0.
+  assert.equal(toNativeScrollX(0, true, 800), -800, 'left edge of the page');
+  assert.equal(toNativeScrollX(800, true, 800), 0, 'right edge of the page');
+  assert.equal(toVisualScrollX(-800, true, 800), 0);
+  assert.equal(toVisualScrollX(0, true, 800), 800);
+  assert.equal(toNativeScrollX(230, false, 800), 230, 'left-to-right pages are untouched');
+  const tiles = planTiles({ width: 1800, height: 500, viewportWidth: 1000, viewportHeight: 500 }, {});
+  const natives = tiles.map((tile) => toNativeScrollX(tile.scrollX, true, 800));
+  assert.deepEqual(natives, [-800, 0], 'tile 0 is the left part, tile 1 the right part');
+  for (const tile of tiles) assert.equal(toVisualScrollX(toNativeScrollX(tile.scrollX, true, 800), true, 800), tile.scrollX);
 });

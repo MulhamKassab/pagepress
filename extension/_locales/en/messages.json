@@ -214,5 +214,17 @@
   },
   "helpPrivate": {
     "message": "Private questions? Use the developer email on the webTopdf Chrome Web Store listing."
+  },
+  "errorLayoutUnstable": {
+    "message": "This page keeps changing its layout while it is scrolled. Try Print mode or Current view."
+  },
+  "doneScrollPanel": {
+    "message": "This page scrolls inside a panel, so the PDF shows that panel’s full content."
+  },
+  "doneGrew": {
+    "message": "The page grew while it was being captured, so the PDF stops at the length it had when the export started."
+  },
+  "errorScrollPanel": {
+    "message": "This page scrolls inside a panel that webTopdf can’t capture in one piece. Use Current view or Print instead."
   }
 }

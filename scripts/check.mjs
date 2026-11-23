@@ -14,7 +14,7 @@ async function walk(dir) {
   return result;
 }
 let count = 0;
-for (const dir of ['extension', 'website', 'scripts', 'tests']) {
+for (const dir of ['api', 'extension', 'website', 'scripts', 'tests']) {
   for (const file of await walk(dir)) {
     const result = spawnSync(process.execPath, ['--check', file], { encoding: 'utf8' });
     if (result.status !== 0) throw new Error(result.stderr || `Syntax failed: ${file}`);

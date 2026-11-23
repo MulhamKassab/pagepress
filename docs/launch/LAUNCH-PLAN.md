@@ -119,7 +119,7 @@ Run on 18 Nov 2026 in a fresh clone, branch `launch/audit` (= `74e12d7`), Node 2
 
 - **Branch decision:** keep `codex/pagepress` as the production branch (and `main` as a mirror), or switch Vercel production and the GitHub default to `main`. Either way, one rule, written in AGENTS.md.
 - **Store publisher profile:** set the display name to "Mulham Kassab" (currently "kassabmulham"). Choose the public developer contact (the personal Gmail is shown today) or create a support address. Confirm the EU **trader / non-trader** declaration.
-- **Support email:** pick the address (e.g. `support@` or `hello@mulhamkassab.dev`) and set up receiving/forwarding at the domain's DNS provider.
+- **Support email:** `info@mulhamkassab.dev` (decided 23 Nov 2026; a free alias of the Workspace mailbox).
 - **Privacy policy:** approve the new wording, your controller identity and country, and whether to add a short Terms page.
 - **Website analytics:** keep "no analytics" (current promise) or allow cookie-less site analytics with a policy update. The extension stays analytics-free either way.
 - **Arabic listing:** provide or approve the Arabic name, summary and description (and decide whether the Arabic name stays "webTopdf").

@@ -1,7 +1,7 @@
 # AGENTS.md — webTopdf (repo: pagepress)
 
 Guide for coding agents and new contributors. Read this before you change anything.
-Last reviewed: 19 Nov 2026 (release 1.2.0 fixes all audit items; see "Status" at the top of BUGS.md). Audit outputs: [docs/launch/BUGS.md](docs/launch/BUGS.md), [docs/launch/LAUNCH-PLAN.md](docs/launch/LAUNCH-PLAN.md).
+Last reviewed: 19 Nov 2026 (release 1.2.0 fixes all audit items). The launch audit is kept privately, outside this public repo.
 
 ## 1. What this is and who it is for
 
@@ -91,7 +91,7 @@ scripts/              build.mjs (vendor + ZIP + release.json), check.mjs (syntax
 tests/                node:test unit/integration tests with mocked chrome.* APIs (geometry, background, content, PDF, popup).
 .github/workflows/    ci.yml: npm ci, verify, lint (GitHub Actions is currently blocked by billing; run the same steps locally).
 store/                Store listing text, privacy-form answers, permission justifications and the upload PNGs.
-docs/                 Store-prep notes and per-release notes. docs/launch/ holds the launch audit.
+docs/                 Store-prep notes and per-release notes.
 .artifacts/           Build and test output (git-ignored): versioned ZIPs, smoke reports, screenshots.
 ```
 

@@ -8,7 +8,7 @@ A Chrome extension that turns the current webpage into a PDF, with a companion i
 - **Print PDF:** opens the browser's print preview for text-friendly, searchable PDFs when the source page supports them. Select **Save as PDF** and save in the browser dialog.
 - A4 or Letter, portrait or landscape, margins, capture quality, source/date footer, and saved preferences.
 - Hide selected page elements, undo removals, and restore the page. Long captures omit repeated sticky elements and restore the scroll position afterward.
-- Page processing stays in the browser. No accounts, conversion server, remote scripts, analytics, or page-content uploads.
+- Page processing stays in the browser. No accounts, conversion server, remote scripts, analytics, or page-content uploads in the extension. The website alone counts page visits with Vercel Web Analytics (no cookies).
 
 ## Install from the Chrome Web Store
 

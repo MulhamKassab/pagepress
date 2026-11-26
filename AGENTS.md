@@ -13,7 +13,7 @@ The UI is in **English and Arabic** (`extension/_locales/en|ar`, right-to-left p
 - **Visual PDF**: scroll-and-screenshot capture of the full page or the current view, stitched into a paginated image PDF (text is not selectable).
 - **Searchable print**: injects print CSS and opens Chrome's print dialog; the user picks "Save as PDF".
 - Options: A4/Letter, portrait/landscape, margins, image quality, source/date/page-number footer, "avoid repeated sticky headers", "preload images", presets, **Pick & hide** (click page elements to hide them before export), and an **Alt+Shift+P** quick-save shortcut.
-- Everything runs locally in the browser. No accounts, no server, no analytics.
+- Everything runs locally in the browser. No accounts, no server, no analytics in the extension. The website (website/) loads only Vercel Web Analytics (/_vercel/insights/script.js, same origin, no cookies) since 26 Nov 2026; never add it to the extension.
 
 Audience: everyday Chrome users who want to keep an article, recipe, receipt or research page as a PDF.
 
